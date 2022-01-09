@@ -1,0 +1,20 @@
+-----------------------------------------
+LEVEL01.BIN
+Bienvenue dans NINJA CARNAGE. Tout d’abord sache que ce jeu contient un langage très grossier.  Appuie sur ESPACE ou FEU pour  continuer 
+Le jeu est déconseillé aux moins de 16 ans. Si tu es OK, appuie sur ACTION pour continuer. ACTION te servira à valider et passer toutes les pages du jeu. 
+Parfait, on y va alors. Je m’appelle ISHIKAWA NAGATO. Je suis un Ninja assez connu. T'as vu le bogoss ? Quoi t’as jamais entendu parler de moi ? 
+Tu sors des fois ou tu restes devant ton ordi à te branler toute la journée ? On n'a pas idée d’être aussi peu cultivé. Au moins tu me connais maintenant... 
+Ces derniers temps on entend beaucoup parler de cette conne de NURE-ONNA. Ca me fait carrément chier car je tue 10 fois plus que cette grosse pute ! 
+Bref, j’ai décidé d’aller m’occuper d’elle et de foutre le merdier dans son organisation de baltringues. Elle se cache dans un temple au coeur du japon. 
+Une fois qu’elle ne sera plus de ce monde, on pourra à nouveau parler de moi comme avant. J’ai une réputation à tenir !! C'est là que tu interviens ma couille. 
+La mauvaise nouvelle pour moi, c’est que c’est TOI qui vas me servir de guide. On m’a dit que t’étais pas une flèche ! Je sens que je vais en chier !!! 
+Mais il n’y a que toi de disponible. Dis moi, faut quand même être sacrément attardé pour jouer encore sur un CPC de nos jours ??! 
+Tu manques de tendresse et tu te réfugies dans les souvenirs de ton enfance ? bla bla bla bla... Mon bébé, va falloir que tu ASSURES sur ce coup là ! 
+Je vais t’expliquer comment tu vas pouvoir m’aider. Je vais y aller doucement pour être sur que ton petit cerveau comprenne bien tout. 
+Ce qui m'emmerde, c'est que je vais risquer ma vie et que toi tu vas pas bouger ton gros cul de ta chaise. Ca pue du cul cette histoire. 
+Mais bon pas le choix, alors go. Bon alors, tu vas voir un curseur sur l’image de jeu. Ce curseur tu peux le déplacer avec DIRECTIONS.  
+Quand le curseur est sur une zone d’action, il devient vert. Tu connais tes couleurs hein ? VERT bien, ROUGE pas bien. Tu devrais y arriver... 
+Sur l'endroit choisi, fais ACTION pour agir. Il a compris le gogol ? Allez on y va, ACTION pour commencer ! 
+Tu peux jouer au clavier ou au joystick. ACTION et DIRECTIONS seront espace et flèches au clavier, et le bouton feu et les directions pour le joystick. 
+morts:
+None

@@ -1,0 +1,241 @@
+* NINJA.PRS 32Ko
+DEB : &2511
+LEN : &7F2A
+FIN : &A43B
+EXE : &3A00
+
+* NINJA.PAK 16Ko
+DEB : &C000
+LEN : &3C41
+FIN : &FC41
+
+DEB : &FC45
+LEN : &00AC
+FIN : &FCF1
+
+LG=&3CF1
+
+
+- - - - - - - - - - - [ 3 - La dernière ligne droite ] - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Routine en BASIC :
+10 MODE 0:BORDER 0:FOR i=0 TO 15:INK i,0:NEXT:CALL &1B0:RUN"NINJA   .BIN
+
+Saisir directement en mémoire le code ASM
+&1B0 : 21,D0,01,11,00,C0,01,00,40,ED,B0,21,00,C0,11,11,25,CD,45,FC,CD,00,3A,C9
+
+Charger les données sauvegardé a l'étape 2
+&1D0 : NINJA.PAK+CodeDecomp -> NINJA.DAT
+
+DEB : &0170
+FIN : &3EC1
+
+;SAUVEGARDE DU FICHIER BASIC/BINAIRE
+ORG &A400
+LD B,12
+LD HL,NOM_FICHIER
+LD DE,&C000
+CALL &BC8C
+
+LD HL,&170	;debut du fichier
+LD DE,&3D55	;longueur du fichier (avec une marge de securite)
+LD BC,&FADA	;adresse execution du fichier
+LD A,0		;type BASIC
+CALL &BC98
+CALL &BC8F
+CALL &BC89
+CALL &BC92
+RET
+
+NOM_FICHIER
+DEFB "NINJA   .BAS"
+
+
+
+- - - - - - - - - - - [ 2 - charger le fichier binaire et le sauver via l'émulateur ] - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+MEMORY &3FFF:LOAD"NINJA.DAT",&4000
+
+- - - - - - - - - - - [ 1 - regrouper NINJA.PACK + APLIB decomp] - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+1 MODE 0
+2 LOAD "NINJA.PAK",&C000
+3 CALL &BB06:'compiler le code ASM
+4 SAVE"NINJA.DAT",b,&C000,&3CF3
+
+
+ORG &FC45
+;------------------------------------------------------------------------------
+;list
+; Aplib decrunching routine
+;nolist
+; (c) CNGSOFT
+; En entree, on a :
+; HL = implantation du code compacte
+; DE = implantation du code decompacte
+;------------------------------------------------------------------------------
+DECOMPAPLIB
+        CALL boot
+        JP &000F
+
+; Maxam source by T&J/GPA -  01/18/2008
+; Nothing changed, except thy damned hidden opcodes
+; and a new variable for Maxam ( 13+8*0 = 0 for Maxam )
+; Attention, cette routine contient un assemblage conditionnel.
+; Si Aplib8flag = 0, le code decompacte est ecrite du bas de la
+; memoire vers le haut de la memoire. C est ce que font par defaut
+; les programmes modifies par Dadman/CEZ - Team (APPACK.EXE et
+; aPPackWin.exe.
+
+; Si Aplib8flag = 1, le code decompacte est ecrit du haut de la
+; memoire vers le bas de la memoire. Le code compacte doit bien
+; evidemment etre organise en consequence.
+aplib8flag equ &0  ; = DEC  &00 pour INC
+
+flagdecde equ aplib8flag*8 ; for Maxam compatibility
+
+Boot
+ PUSH HL ; used for EX HL,(SP)
+ PUSH HL
+  POP IX
+ DB &FD,&26,&80 ; LD IYh,&80
+  
+aplib8literal
+
+ LD A,(IX+ &00)
+
+ DB &DD,&23 + flagdecde ; INC IX/DEC IX
+ 
+ LD (DE),A
+ 
+ DB &13 + flagdecde ; INC DE/DEC DE
+ DB &FD,&2E,&02       ; LD IYl,&2
+
+aplib8nexttag
+
+ CALL aplib8getbit
+  JR NC, aplib8literal
+ LD BC,&0000
+ CALL aplib8getbit
+ JR NC, aplib8codepair
+ LD H,B
+ CALL aplib8getbit
+ JR NC, aplib8shortmatch
+ DB &FD,&2E,&02      ; LD IYl,2
+ INC C ; bc
+ LD L,&10
+
+aplib8getmorebits
+
+ CALL aplib8getbit
+ RL L
+ JR NC, aplib8getmorebits
+ JR NZ, aplib8domatch
+  LD A,L
+ LD (DE),A
+ DB &13+ flagdecde ; INC DE/DEC DE
+ JR aplib8nexttag
+
+aplib8codepair
+ 
+ CALL aplib8getgamma
+  DB &FD,&4D  ; LD C,IYl
+ SBC HL,BC
+  JR NZ, aplib8normalcodepair
+ CALL aplib8getgamma
+  LD B,H
+ JR aplib8domatch_lastpos
+
+aplib8normalcodepair
+
+ DEC L
+ LD H,L
+  LD L,(IX + &00)
+ DB &DD,&23+ flagdecde ; INC IX/DEC IX
+  PUSH HL
+ CALL aplib8getgamma
+ LD B,H
+  POP HL
+ LD A,H
+ CP 125 ; cmp eax,32000
+  JR NC, aplib8domatch_with_2inc
+ CP &05
+  JR NC, aplib8domatch_with_inc
+ AND A
+  JR NZ, aplib8domatch_new_lastpos
+ LD A,L
+  ADD A
+ JR C, aplib8domatch_new_lastpos
+
+aplib8domatch_with_2inc 
+
+ INC BC
+ 
+aplib8domatch_with_inc
+
+ INC BC
+aplib8domatch_new_lastpos
+
+ EX (SP),HL
+ 
+aplib8domatch_lastpos
+
+ POP HL
+ PUSH HL
+  DB &FD,&2E,&01  ; LD IYl,1
+
+aplib8domatch
+
+if aplib8flag ; LDIR/LDDR
+
+  ADD HL,DE
+   LDDR
+else
+ AND A
+  EX DE,HL
+   SBC HL,DE
+   EX DE,HL
+   ADD HL,DE
+ EX DE,HL
+  LDIR
+endif
+ JR aplib8nexttag
+
+aplib8shortmatch
+
+ LD L,(IX+&00)
+ DB &DD,&23+ flagdecde ; INC IX/DEC IX
+  SRL L
+ JR Z, aplib8donedepacking
+  RL C
+ JR aplib8domatch_with_2inc
+
+aplib8getbit
+
+ DB &FD,&7C ; LD A,IYh
+ ADD A
+  JR NZ,aplib8getbit_
+  LD A,(IX + &00)
+ DB &DD,&23+ flagdecde ; INC IX/DEC IX
+  ADC A
+
+aplib8getbit_
+
+ DB &FD,&67 ; LD  IYh,A
+ RET
+
+aplib8getgamma
+
+ LD HL,&0001
+ 
+aplib8getgamma_ 
+ CALL aplib8getbit
+ ADC HL,HL
+  CALL aplib8getbit
+ JR C, aplib8getgamma_
+  LD C,L
+ RET
+
+aplib8donedepacking
+
+ POP HL ; used for EX HL,(SP)
+ PUSH IX
+  POP HL
+ RET ; Warning, A might not be 0!

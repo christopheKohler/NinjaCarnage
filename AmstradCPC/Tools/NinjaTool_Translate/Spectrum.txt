@@ -1,0 +1,2248 @@
+; -- Processing : LEVEL01.BIN
+;    Sucess Texts : 15
+DEFB "the game is not recommended for "
+DEFB "  children under 16. if you are   "
+DEFB "  happy to continue, press action.  "
+DEFB "action WILL BE USED GO TO THE NEXT"
+DEFB "             page.              "
+
+DEFB "    perfect, here we go: i'm    "
+DEFB "ishikawa nagato. I'M A NINJA, AND "
+DEFB " a fucking legend. WHAT, YOU NEVER  "
+DEFB "           heard of me?           "
+DEFB "                                "
+
+DEFB "do you ever leave the house? or "
+DEFB "just sit at your computer jerking "
+DEFB "  off all day long? sounds fucking  "
+DEFB "antisocial. well at least you know"
+DEFB "           me NOW...            "
+
+DEFB " i've been hearing a lot about  "
+DEFB "this cunt nure-onna. IT'S PISSING "
+DEFB "me off - i've killed ten times more "
+DEFB "than that attention-seeking bitch!"
+DEFB "                                "
+
+DEFB " in short, i've decided to fuck "
+DEFB "her over, and her gang of pussies "
+DEFB "  too. she's hiding in a temple in  "
+DEFB "           inner japan.           "
+DEFB "                                "
+
+DEFB " once she's out'a the picture,  "
+DEFB "  people will talk about me like  "
+DEFB "before. i have a reputation to keep!"
+DEFB " this is where you come in buddy. "
+DEFB "                                "
+
+DEFB "the bad news for me is that it's"
+DEFB " you WHO'LL BE MY GUIDE. BUT I WAS"
+DEFB "   told that you were slow on the   "
+DEFB "uptake... i think you're gonna be "
+DEFB "       a pain in the ass!       "
+
+DEFB "but you're the only one around. "
+DEFB "tell me, ain't you some kinda sad "
+DEFB "retard to still be playing on a cpc?"
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "  you lack affection and take   "
+DEFB "shelter in your childish memories?"
+DEFB " boo hoo. mama's boy, you'll need to"
+DEFB "  be on top form TO HANDLE THIS!  "
+DEFB "                                "
+
+DEFB "i'm going to explain how you can"
+DEFB " help me. i'll go slowly to make  "
+DEFB "  sure that little brain of yours   "
+DEFB "     understands everything.      "
+DEFB "                                "
+
+DEFB " what annoys me most is that i  "
+DEFB "will risk my life and that you're "
+DEFB " not going to move your fat ass out "
+DEFB "    of your chair. it stinks!     "
+DEFB "                                "
+
+DEFB " but hey-ho i've no choice, so  "
+DEFB "off we go. well then, you'll see a"
+DEFB " cursor on the screen. you can move "
+DEFB "     it with the directions.      "
+DEFB "                                "
+
+DEFB "when the cursor is over an area "
+DEFB "of action, it turns green. you do "
+DEFB "  know your colors right? green IS  "
+DEFB "good, red IS WRONG. YOU SHOULD GET"
+DEFB "             it...              "
+
+DEFB " on the chosen location, press  "
+DEFB " action TO ACT. YOU DO UNDERSTAND "
+DEFB "don't you? come on let's go, action "
+DEFB "            to begin!             "
+DEFB "                                "
+
+DEFB "you can play using the keyboard "
+DEFB "or joystick. action AND directions"
+DEFB " are space & arrows on the keyboard,"
+DEFB " or using fire & directions on the"
+DEFB "           joystick.            "
+
+;    Deaths Texts : 0
+; -- Processing : LEVEL02.BIN
+;    Sucess Texts : 9
+DEFB "well done. I'M NOT SURE WHAT WE "
+DEFB "do in these cases, do we hand out "
+DEFB "prizes? on an image, you can have up"
+DEFB "           to 9 zones.            "
+DEFB "                                "
+
+DEFB "you'll have to find the logical "
+DEFB "  order so i can progress, area   "
+DEFB "after area. every mistake will lead "
+DEFB "      me to death. IT SUCKS!      "
+DEFB "                                "
+
+DEFB "after each death, we'll restart "
+DEFB "at the beginning. so concentrate! "
+DEFB " otherwise this shit will last for  "
+DEFB "fucking ever!. come on, now action"
+DEFB "       the boulder BUDDY.       "
+
+DEFB "ok, YOU GOT IT EINSTEIN. I FEEL "
+DEFB "it's not going to be a picnic with"
+DEFB " you by my side. come on, continue. "
+DEFB " sometimes i'll have to deal with "
+DEFB "            traps...            "
+
+DEFB "   i will need to avoid them    "
+DEFB "quickly. on your side you'll have "
+DEFB " a directions SEQUENCE TO EXECUTE.  "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "if you it mess up, i die. let's "
+DEFB "see if you understand all this so "
+DEFB "far. select the part that looks like"
+DEFB " an arrow AND GET READY TO DO THE "
+DEFB "       rhythmic sequence.       "
+
+DEFB " after the two starting icons,  "
+DEFB "   follow the sequence with the   "
+DEFB "            directions.             "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "well done DUDE! YOU SEE, YOU'RE "
+DEFB " not thick as you look!. i think  "
+DEFB " you understand the basics now. we  "
+DEFB "  can start - now it's for real!  "
+DEFB "                                "
+
+DEFB "i'm not kidding, take care of my"
+DEFB " ass... press action, AND WE WILL "
+DEFB " start the game. i have a bitch to  "
+DEFB "         whack! go go go!         "
+DEFB "                                "
+
+;    Deaths Texts : 3
+DEFB "  oh shit, YOU WELL AND TRULY   "
+DEFB "  fucked up!. we'll be here all   "
+DEFB " night at this rate... press action "
+DEFB " and we'll try again. concentrate "
+DEFB "  well my chicken, go go go...  "
+
+DEFB "   no! I TOLD YOU THE FUCKING   "
+DEFB "pebble! IT IS SMALL A PEBBLE, LIKE"
+DEFB " your brain, and all hard, ah, well,"
+DEFB " like your brain too! try again,  "
+DEFB "            dipshit.            "
+
+DEFB " you died! IT WASN'T THAT HARD. "
+DEFB "this doesn't bode well does it? so"
+DEFB " restart the level, at least now YOU"
+DEFB " start to understand that you'll  "
+DEFB " need to pull your own weight.  "
+
+; -- Processing : LEVEL11.BIN
+;    Sucess Texts : 5
+DEFB "well done. I HURL A STONE AT THE"
+DEFB " camera and it is down. that way  "
+DEFB "i'll not be spotted! this is a good "
+DEFB " start, airhead. keep it going... "
+DEFB "                                "
+
+DEFB "i jump over mines and i get onto"
+DEFB "   the side of the gate. we are   "
+DEFB "fine. NOW HOW TO CROSS IT? what do i"
+DEFB "               do ?               "
+DEFB "                                "
+
+DEFB "well done. I CLIMB UP THE POLE. "
+DEFB "now i am well placed to cross the "
+DEFB "  gate. don't screw it up now bud!  "
+DEFB "        what do i do now?         "
+DEFB "                                "
+
+DEFB "yeah. I JUMPED OVER THE GATE. I "
+DEFB " land cat-like on the other side. "
+DEFB " years of training for such feline  "
+DEFB "            agility!.             "
+DEFB "                                "
+
+DEFB "  now we'll have to get to the  "
+DEFB " temple. there is a bridge and a  "
+DEFB "river just after. stay focused bud. "
+DEFB "                                  "
+DEFB "                                "
+
+;    Deaths Texts : 4
+DEFB "  damn those bastard mines. MY  "
+DEFB " fucking legs are blown off!. no  "
+DEFB " need to tell you that in future we "
+DEFB " need to avoid touching the area  "
+DEFB "  outside the gate, einstein!   "
+
+DEFB "shit! I WAS SPOTTED. THE GUARDS "
+DEFB " showed up and shot me. I DIDN'T  "
+DEFB "  get very far! please concentrate  "
+DEFB "    more carefully next time!     "
+DEFB "                                "
+
+DEFB " i jump, but the gate's way too "
+DEFB " far away. i fall like a sack of  "
+DEFB " shit and blow my brains out on the "
+DEFB "   mines. WHAT THE FUCK ARE YOU   "
+DEFB "     playing at? try again!     "
+
+DEFB " i jump on the gate... and i'm  "
+DEFB " stuck on it like an idiot! it's  "
+DEFB "    bloody electrified and i die    "
+DEFB " electrocuted. damn it hurts. try "
+DEFB "             again!             "
+
+; -- Processing : LEVEL12.BIN
+;    Sucess Texts : 4
+DEFB " bravo. I'M HANGING ON THE SIDE "
+DEFB " of the bridge. i ain't gonna get "
+DEFB "  caught this way. a ninja climbs   "
+DEFB "   everywhere. how's that for a   "
+DEFB "      gobful? you go on...      "
+
+DEFB " cool. I WALK ALONG THE SIDE OF "
+DEFB "    the bridge without getting    "
+DEFB " noticed. wait... did i switch the  "
+DEFB "gas off when i left home? sod it! "
+DEFB "     who cares actually...      "
+
+DEFB "i'll try to sneak over there. if"
+DEFB " i'm fairly quiet it will be all  "
+DEFB "               right.               "
+DEFB "     prepare yourself for the     "
+DEFB "          sequence...           "
+
+DEFB "well done! I SNEAKED STEALTHILY "
+DEFB " into the bushes. the dogs didn't "
+DEFB "   hear me. now we can get to the   "
+DEFB "    entrance of the temple...     "
+DEFB "                                "
+
+;    Deaths Texts : 4
+DEFB "   take the main road? i got    "
+DEFB "spotted straight away!. they sent "
+DEFB "in the dogs and i got eaten. YOU GOT"
+DEFB " any more shitty clever ideas like"
+DEFB "             this?              "
+
+DEFB " i jump down and smash my head  "
+DEFB "open ON THE ROCKS. IT'S 10 METRES "
+DEFB "   down, you dickhead. i'm not a    "
+DEFB "friggin' ninja turtle! think about"
+DEFB "    it next time, shithead!     "
+
+DEFB "  i crossed the road to try to  "
+DEFB "climb into the trees but some dogs"
+DEFB "  picked up my scent and chewed me  "
+DEFB " up. i don't get it - i put on a  "
+DEFB "   good deodorant! try again.   "
+
+DEFB " i wasn't quiet enough and some "
+DEFB "dogs heard me. they chewed my ass "
+DEFB "and the guards finished me off with "
+DEFB "  guns. i'm left sinking to the   "
+DEFB "   bottom of the river. fuck!   "
+
+; -- Processing : LEVEL13.BIN
+;    Sucess Texts : 5
+DEFB "bravo, I KICK IN THE HEAD OF THE"
+DEFB "  dog on the left. the other is   "
+DEFB " going to bite me. what should i do "
+DEFB "           to avoid it?           "
+DEFB "                                "
+
+DEFB "  yeah. I JUMP AND I AVOID THE  "
+DEFB " bite of the second dog. i don't  "
+DEFB "    know which of the two is the    "
+DEFB "dumbiest. be careful, this one is "
+DEFB "            angry...            "
+
+DEFB " yes! I DROP DOWN, AND KICK THE "
+DEFB "mutt's ass. he runs off squealing "
+DEFB "  like a chihuahua. the other one   "
+DEFB "     comes back from limbo...     "
+DEFB "                                "
+
+DEFB "  bam, ONE BIG KICK IN THE ASS  "
+DEFB " sorts out that mutt. they ain't  "
+DEFB "coming back to piss me off. i'll go "
+DEFB " on, it's just the start but it's "
+DEFB "      getting serious now.      "
+
+DEFB "i'm sure the assholes heard the "
+DEFB "dogs. i'll go through the roof, it"
+DEFB " will be safer. they're idiots, but "
+DEFB "  they do monitor the entrance.   "
+DEFB "                                "
+
+;    Deaths Texts : 4
+DEFB "  not enough time to move, the  "
+DEFB "left dog grabbed my leg. the other"
+DEFB " jumped onto me and chewed MY FACE. "
+DEFB "   they're starving. try again    "
+DEFB "           asshole...           "
+
+DEFB "  are you serious? you think a  "
+DEFB "vicious pack like that is going to"
+DEFB "  be distracted by a sausage? they  "
+DEFB " jump on me and chew MY DICK OFF. "
+DEFB "they got their meat in the end. "
+
+DEFB " you want me to throw them some "
+DEFB " kibbles? you're a moron! in the  "
+DEFB "meantime, i got my balls ripped off!"
+DEFB "        cut the crap man!         "
+DEFB "                                "
+
+DEFB " now it's the dog on the right  "
+DEFB " that's jumping on me. no time to "
+DEFB " avoid it, and it's eating my ear.  "
+DEFB "the other one comes back and rips "
+DEFB "       my face off. awch.       "
+
+; -- Processing : LEVEL21.BIN
+;    Sucess Texts : 5
+DEFB "   with my ashiko i CAN MOUNT   "
+DEFB " anything, even your mother! BUT  "
+DEFB " let's be serious here, this thing  "
+DEFB "smells like a trap. so, let's stay"
+DEFB " cool. where are we going now?  "
+
+DEFB "well done. I HANG ON THIS FIRST "
+DEFB " point. it is quite stable. this  "
+DEFB "facade is still very strange - there"
+DEFB " are holes in the wood everywhere."
+DEFB "                                "
+
+DEFB "i'm jumping the other way. bravo"
+DEFB " zulu. SO FAR SO GOOD. I HEAR IT'S"
+DEFB "  bangin' inside. good job i went   "
+DEFB "   this way. what do i do now?    "
+DEFB "                                "
+
+DEFB "   flawless. I BOUNCE ON THIS   "
+DEFB " platform-like bit. almost there. "
+DEFB "   they won't see me coming, the    "
+DEFB "arseholes. can't wait to see their"
+DEFB "         pretty faces.          "
+
+DEFB "one last leap and there we go. i"
+DEFB " made it to the roof. it hurts my "
+DEFB "pride to say it, but you kick ass. I"
+DEFB "  need to find an opening. let's  "
+DEFB "         keep climbing.         "
+
+;    Deaths Texts : 3
+DEFB "  wowch. IT'S TOO DAMN HIGH. I  "
+DEFB "smash my face into the ground. i'm"
+DEFB "   not a mountain goat. find me a   "
+DEFB "            safer way.            "
+DEFB "                                "
+
+DEFB "i jump onto this girder, and my "
+DEFB " gut gets punctured BY SPIKES. I  "
+DEFB "had a hunch there was a trap within "
+DEFB "  this facade. find me a better   "
+DEFB "             route.             "
+
+DEFB "i jump onto the platform. but it"
+DEFB "  collapses under me and i fall   "
+DEFB " like a sack of shit. am i getting  "
+DEFB " fat? maybe less mayonnaise on my "
+DEFB "             sushi!             "
+
+; -- Processing : LEVEL22.BIN
+;    Sucess Texts : 5
+DEFB "                                "
+DEFB "                                  "
+DEFB "              warning               "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "yes. IT WAS CLOSE BUT I MANAGED "
+DEFB "  to get across this part of the  "
+DEFB " roof. by the way, it is the yakuza "
+DEFB "gang toa yuaikai IN THERE. A WHOLE"
+DEFB "       bunch of bad boys.       "
+
+DEFB " yep. it slips but i progress.  "
+DEFB "these idiots extort money and sell"
+DEFB "  drugs. it won't be a great loss   "
+DEFB " when i kill all those assholes.  "
+DEFB "                                "
+
+DEFB " good. I'M MORE THAN HALF WAY.  "
+DEFB " did i tell you that my left ball "
+DEFB " was itching? and you, are you ok?  "
+DEFB "  ain't your ass itching on your  "
+DEFB "             chair?             "
+
+DEFB " well done. I FINALLY JUMPED UP "
+DEFB "  onto the roof. we get to sneak  "
+DEFB "through an opening. but wait - what "
+DEFB "             is that?             "
+DEFB "                                "
+
+;    Deaths Texts : 5
+DEFB " nope asshole, IT'S TOO FAR. I  "
+DEFB " jumped and i slipped. you don't  "
+DEFB " need to be a genius to see that we "
+DEFB "  must go slowly here. you in a   "
+DEFB "   hurry or something, dope?    "
+
+DEFB "  i lost my balance because of  "
+DEFB "you. i bounced three times on the "
+DEFB "   ground. shit! i'm not a pretty   "
+DEFB "     sight. and i was such a      "
+DEFB "  good-looking guy! try again!  "
+
+DEFB "i lost my balance! i fell RIGHT "
+DEFB "at the door. crushed a guard, but "
+DEFB "  his buddy shot me. we need to be  "
+DEFB "careful if we want to progress, my"
+DEFB "      little ball & chain.      "
+
+DEFB "i missed my jump and my head hit"
+DEFB "  the floor. it's your fault i'm  "
+DEFB "dead, YOU MORON. I KNEW IT WOULD GO "
+DEFB "wrong. i should have stayed in my "
+DEFB "              bed.              "
+
+DEFB "  boom, I SMASH TO THE GROUND.  "
+DEFB "because of you i lost my balance. "
+DEFB "    is it fucking hard to press     "
+DEFB " buttons?! are you trying to piss "
+DEFB "       at the same time?        "
+
+; -- Processing : LEVEL23.BIN
+;    Sucess Texts : 8
+DEFB " never mind. we'll fuck him up  "
+DEFB "  anyway! he has two sais, WITH   "
+DEFB "crappy little prongs to throw people"
+DEFB "     or block sword attacks.      "
+DEFB "                                "
+
+DEFB " whoosh. A SHURIKEN IN HIS DUMB "
+DEFB " face! should distract him for a  "
+DEFB "    few seconds. i have to take     "
+DEFB " advantage of this. what do i do  "
+DEFB "              now?              "
+
+DEFB " looking good. I APPROACH AND I "
+DEFB "  kick away his sai. shit - he's  "
+DEFB " regained consciousness, watch out! "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "that'S good! A BIG TONFA HIT TO "
+DEFB " his face. not his day, is it? on "
+DEFB "the other hand, he could be bored to"
+DEFB "  death here. we're doing him a   "
+DEFB "            favour.             "
+
+DEFB "   boom, I KICK OUT HIS EXTRA   "
+DEFB "  blade. he's only got his dick   "
+DEFB " left. but i feel it ain't gonna be "
+DEFB "            for long.             "
+DEFB "                                "
+
+DEFB " you read my mind, huh? i kick  "
+DEFB "   him in the cojones, AND HIS    "
+DEFB "tonsils leap from his mouth. i wince"
+DEFB "          with symathy.           "
+DEFB "                                "
+
+DEFB "   and the coup de grace - a    "
+DEFB "  massive back-kick to his head.  "
+DEFB " that's fucking shabba. SOME DAYS I "
+DEFB "would ask for my own autograph... "
+DEFB "                                "
+
+DEFB " well played anyhow. hey, uh, a "
+DEFB "  skylight there. let's jump in,  "
+DEFB "must be a bunch of fuckboys up there"
+DEFB "     to be deaded. go go go!      "
+DEFB "                                "
+
+;    Deaths Texts : 5
+DEFB "the minute i move, he throws his"
+DEFB " spike into my mug. i fall OFF THE"
+DEFB "   rooftop. i can't fly. capisci,   "
+DEFB "            dumbfuck?             "
+DEFB "                                "
+
+DEFB "  i hit with the tonfa but he   "
+DEFB "blocks me with his sai. he thrusts"
+DEFB "  the other into my belly. damn it  "
+DEFB " hurts. my blood splashes. i fall "
+DEFB "            and die.            "
+
+DEFB "bad idea. HE'S STUNNED BUT STILL"
+DEFB " has the nerve to stab me with his"
+DEFB " blade. my outfit's really fucked up"
+DEFB "  now, for sure. i roll over and  "
+DEFB "     crash 12 meters down.      "
+
+DEFB "  i kick him, but he stabs my   "
+DEFB "bollocks with his remaining blade."
+DEFB "   he kebabs my balls, and i roll   "
+DEFB "    down, dead and castrated!     "
+DEFB "                                "
+
+DEFB "trying a roundhouse kick to his "
+DEFB "head, i slip on some pigeon poop. "
+DEFB "i crash and smash myself. the royal "
+DEFB "shameage. DON'T MENTION IT. EVER. "
+DEFB "                                "
+
+; -- Processing : LEVEL31.BIN
+;    Sucess Texts : 7
+DEFB "the guards are close. i'll have "
+DEFB " to hurry. a gauge will indicate  "
+DEFB "  the time i HAVE TO MAKE MY NEXT   "
+DEFB "     action. think fast bro.      "
+DEFB "                                "
+
+DEFB "  well done. I JUMPED AND I AM  "
+DEFB "hanging from the lamp. it takes my"
+DEFB "   weight. i hear the guards, one   "
+DEFB "      floor below. hurry up!      "
+DEFB "                                "
+
+DEFB "  yes. I JUMP ON THE POLE AND   "
+DEFB "  clench my thighs to hold on. i  "
+DEFB "admit, that position makes me hard. "
+DEFB "i'd like to stay but now's not the"
+DEFB "             time!              "
+
+DEFB "  all good. I GRABBED THE LAMP  "
+DEFB " wire. i would have thought that  "
+DEFB "  with such a big cock as mine the  "
+DEFB "  ceiling would collapse, but it  "
+DEFB "       holds. for now....       "
+
+DEFB " yeah. THE GUARDS ARE NOT THERE "
+DEFB " yet, i'm one step ahead. i don't "
+DEFB "know what lies behind that door but "
+DEFB "   i'm going to kick some ass!    "
+DEFB "                                "
+
+DEFB " you understand that sometimes  "
+DEFB "  you'll have to hurry, yeah? we  "
+DEFB " don't have all day, and we have to "
+DEFB "progress quickly. i'm counting on "
+DEFB "       you, fucknugget...       "
+
+DEFB "  holy cow, what shitty decor.  "
+DEFB "  someone needs to arrange a tv   "
+DEFB "makeover. but the scouse bint would "
+DEFB "   probably have a heart attack   "
+DEFB "            here...             "
+
+;    Deaths Texts : 4
+DEFB "the ground is booby-trapped with"
+DEFB " a laser system. i'm detected, and"
+DEFB " the guards  give me a good kicking."
+DEFB "   i'll have to get to the door   "
+DEFB "  without touching the ground.  "
+
+DEFB "it's too far. i jump but land on"
+DEFB "   the floor. i'm spotted. the    "
+DEFB " guards blow MY HEAD OFF. I HAVE TO "
+DEFB "        find another way.         "
+DEFB "                                "
+
+DEFB "the lamp is loose and gives way "
+DEFB "under my weight. guess i got a fat"
+DEFB " ass from eating shit at mcdonalds! "
+DEFB "    the guards break MY HEAD.     "
+DEFB "                                "
+
+DEFB " i smash my face into the pole. "
+DEFB "do you think i'm a monkey that can"
+DEFB "   jump that far? cut the crap or   "
+DEFB "     we're not gonna make it!     "
+DEFB "                                "
+
+; -- Processing : LEVEL32.BIN
+;    Sucess Texts : 6
+DEFB "  one good KICK AND THE STOOL   "
+DEFB "flies straight into his dumb face."
+DEFB "  he didn't foresee that - didn't   "
+DEFB "    even have time to drop his    "
+DEFB "          chopsticks!           "
+
+DEFB "yes. I THROW A HANDFUL OF FLOUR "
+DEFB "  and the cloud hits him in the   "
+DEFB " eyes. it'll take him a few seconds "
+DEFB "     to see clearly again....     "
+DEFB "                                "
+
+DEFB " warning - LOOKS LIKE HE HAS A  "
+DEFB " tanto HIDDEN UNDER HIS OUTFIT. I "
+DEFB "         have to act fast.          "
+DEFB "   get ready for the sequence...  "
+DEFB "                                "
+
+DEFB "  well done. I HAD JUST ENOUGH  "
+DEFB " time to block his hand before he "
+DEFB "pulled his knife out. i think i can "
+DEFB "          smash him now.          "
+DEFB "                                "
+
+DEFB " blam. A HEFTY BLOW TO HIS FAT  "
+DEFB "face - smashing out all his teeth."
+DEFB " if he tries to eat a baguette it'll"
+DEFB "   look like someone fisting a    "
+DEFB "          grandmother.          "
+
+DEFB "let's find the secret passage to"
+DEFB " go down. small dicks always have "
+DEFB " places to hide. i open the sliding "
+DEFB "   door, it should be there...    "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB " i barely have time to move. he "
+DEFB "takes his tanto OUT AND pushes IT "
+DEFB "into my stomach. my guts are on the "
+DEFB "    table. oh look, here's the    "
+DEFB "           mcdonalds!           "
+
+DEFB "  you think it's time to eat,   "
+DEFB "moron? i barely moved towards the "
+DEFB "bowl and that asshole cut MY THROAT!"
+DEFB "       you are such a dick!       "
+DEFB "                                "
+
+DEFB " i went to smash his leg but he "
+DEFB "retrieved his tanto and stabbed ME"
+DEFB "   in the stomach. he watches me    "
+DEFB "  collapse with a sadistic look.  "
+DEFB "                                "
+
+DEFB "i was not fast enough. i didn't "
+DEFB "  block his knife and he cut MY   "
+DEFB "throat. the blood spurts everywhere."
+DEFB " my satisfaction is that his soup "
+DEFB "        is now inedible!        "
+
+DEFB " i hit his leg, but the asshat  "
+DEFB " smashes HIS BOWL ON MY HEAD. HE  "
+DEFB "uses a piece of it to cut my throat."
+DEFB " you didn't see that one coming? i"
+DEFB "              did!              "
+
+DEFB "i approach to strangle him, but "
+DEFB "he retrieves his knife and skewers"
+DEFB " my face. i've not even had time to "
+DEFB " tell you what a big bastard you  "
+DEFB "              are.              "
+
+; -- Processing : LEVEL33.BIN
+;    Sucess Texts : 7
+DEFB "bam. GOOD REFLEXES. JUST HAD THE"
+DEFB " time to dodge his bullet. the son"
+DEFB "   of a bitch shot fast, he's not   "
+DEFB "  kidding. concentrate now, and   "
+DEFB "          don't miss!           "
+
+DEFB " yes. I WRAP MY BELT AROUND HIS "
+DEFB "hand so i can approach him. he is "
+DEFB "an oyabun - A yakuza CLAN LEADER. IT"
+DEFB "       won't be a big loss.       "
+DEFB "                                "
+
+DEFB "   hmm... great! I STOLE THE    "
+DEFB " faggot's chopsticks while he was "
+DEFB "  eating. i think it's a good idea  "
+DEFB " against this scumbag. where do i "
+DEFB "              hit?              "
+
+DEFB " bam, I PUSH THE STICK INTO HIS "
+DEFB " eye. he's squealing like a pig.  "
+DEFB " usually he's the one who tortures  "
+DEFB "people. it almost makes me happy. "
+DEFB "      now let's finish it.      "
+
+DEFB "  haha! WHILE HE IS CRYING OUT  "
+DEFB " like a pig, i push the duck into "
+DEFB "his throat. you're a little rascal, "
+DEFB "           aren't you?            "
+DEFB "                                "
+
+DEFB "i grab his gun and put it under "
+DEFB "  his jaw. pow! THE WALL IS ALL   "
+DEFB "covered... i'd never thought that a "
+DEFB "stupid guy like him would have so "
+DEFB "          much brains.          "
+
+DEFB " good job. i think the basement "
+DEFB "  entrance is near. did you know  "
+DEFB "that an whale's dick could be up to "
+DEFB " 2 meters long? isn't that crazy? "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB " no. I BARELY HAD TIME TO MOVE  "
+DEFB "when he blew up my face. the last "
+DEFB " thing that crossed my mind was the "
+DEFB "       bullet from his gun.       "
+DEFB "                                "
+
+DEFB " damn fucking no. THE SHURIKEN  "
+DEFB "are for when you're distant! WHAT "
+DEFB " part of this simple rule don't you "
+DEFB "understand you dumbass? my head is"
+DEFB "        being blown up!         "
+
+DEFB "  are you serious YOU FUCKWIT?  "
+DEFB " we're facing a boss who's aiming "
+DEFB "at us with his gun and you pull out "
+DEFB "a rubber duck? your mom could shit"
+DEFB "          better kids!          "
+
+DEFB " you want to go and give him a  "
+DEFB "   kiss, you idiot? while i was   "
+DEFB " trying to shoot his eyes, he aimed "
+DEFB " at me again and blew UP MY HEAD! "
+DEFB "                                "
+
+DEFB " we've got no time for that. i  "
+DEFB "   thought you were starting to   "
+DEFB "   figure it out, but no! are you   "
+DEFB "  randomly pressing keys like a   "
+DEFB "            retard?             "
+
+DEFB "i try to grab his gun but he is "
+DEFB "  faster than me. he catches my   "
+DEFB " wrist and turns my gun against me. "
+DEFB "   pow. THAT'S MY BRAIN ON YOUR   "
+DEFB "            screen!             "
+
+; -- Processing : LEVEL41.BIN
+;    Sucess Texts : 6
+DEFB "can't go farther. there are two "
+DEFB " temari BALLS ON THE FLOOR. THEY  "
+DEFB " are weighted - in my opinion they  "
+DEFB "must be used to unlock something. "
+DEFB "      let's investigate...      "
+
+DEFB " bingo! THE BALL HITS THE WHITE "
+DEFB "   plate. i hear the sound of a   "
+DEFB "     mechanism and no alarm was     "
+DEFB "   triggered. this must be the    "
+DEFB "beginning of the opening code..."
+
+DEFB "  yes. I THROW THE SECOND BALL  "
+DEFB " onto the red plate. the trapdoor "
+DEFB " mechanism unlocks and the trapdoor "
+DEFB "              opens.              "
+DEFB "                                "
+
+DEFB "   i pull the lever. this has   "
+DEFB " deactivated the trapdoor alarm.  "
+DEFB "come on, we're almost there. forza! "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " i solidly attach the rope and  "
+DEFB "let it drop into the hole. it must"
+DEFB " be 6 meters deep there, i'm going  "
+DEFB "      to be able to go down.      "
+DEFB "                                "
+
+DEFB "let's go. i slide down the rope."
+DEFB "   i don't know what i'll find    "
+DEFB " below, but it will be trouble for  "
+DEFB "              sure!               "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB "    i throw a ball onto the     "
+DEFB " trapdoor, which does... nothing. "
+DEFB " except that the trapdoor activates "
+DEFB " an alarm! 3 assholes show up and "
+DEFB "         break ME IN 2!         "
+
+DEFB "i pulled the lever, and nothing "
+DEFB "happened. and now the alarm's gone"
+DEFB "  off! three assholes show up and   "
+DEFB " punch MY HEAD REPEATEDLY. YOU'LL "
+DEFB "         have to think!         "
+
+DEFB "   i throw the ball onto the    "
+DEFB " coloured plate. a good idea, but "
+DEFB "  maybe the wrong plate. the alarm  "
+DEFB "   rings and 3 assholes flay me   "
+DEFB "          alive! SHIT!          "
+
+DEFB " i throw the rope onto... well, "
+DEFB "nothing. what do you expect me to "
+DEFB "do with a rope at a time like this? "
+DEFB "  now the alarm is ringing and 3  "
+DEFB " tough guys break my ass! OUCH. "
+
+DEFB " i jump into the trapdoor and i "
+DEFB "  crash 6 meters below. did you   "
+DEFB "  think i was a momonga, a flying   "
+DEFB " squirrel? no, i can't fly - and  "
+DEFB "    now i die! YOU FUCKWIT!     "
+
+DEFB "  i enter the trapdoor but the  "
+DEFB " alarm system is still turned on. "
+DEFB " you must have forgotten SOMETHING. "
+DEFB "   yet, there aren't a thousand   "
+DEFB "   things in this tiny room.    "
+
+; -- Processing : LEVEL42.BIN
+;    Sucess Texts : 7
+DEFB "did you know that they drug and "
+DEFB "  rob the customers at the whore  "
+DEFB "bars? well, they're armed and there "
+DEFB "  are two of them. we'll have to  "
+DEFB "    play it safe. let's go!     "
+
+DEFB "yes, I THROW A torinoko, A SMOKE"
+DEFB "   grenade. it releases a large   "
+DEFB " thick cloud of smoke. i'll have an "
+DEFB "advantage for a few seconds, let's"
+DEFB "           take it...           "
+
+DEFB "yeah. I DO A SOMERSAULT AND LAND"
+DEFB " between them. that's where i'll  "
+DEFB "  be best placed to smash the big   "
+DEFB "             turds...             "
+DEFB "                                "
+
+DEFB "good idea. I TAKE OUT MY kamas, "
+DEFB "two nice sharp sickles. with them,"
+DEFB "  i can cut everything! i can even  "
+DEFB " make some sashimi WITH YOUR JOHN "
+DEFB "            thomas!             "
+
+DEFB "well spotted. IN ONE SLICE I CUT"
+DEFB " off their armed hands. the guns  "
+DEFB "  fall to the floor. blood sprays   "
+DEFB "  everywhere, it's disgusting...  "
+DEFB "     who's talking now eh?      "
+
+DEFB "  let's get it over with. WITH  "
+DEFB "   perfect symmetry i slice the   "
+DEFB "throats of bert and ernie. it was a "
+DEFB "   good job, i won't miss those   "
+DEFB "           shitheads.           "
+
+DEFB "the floor is slippery everywhere"
+DEFB "  - i'd better not wallow in the  "
+DEFB " pools of blood. but who's done all "
+DEFB "  of this shit? oh yeah it's me.  "
+DEFB "      lol, what a laugh...      "
+
+;    Deaths Texts : 6
+DEFB "  i charge at the first one to  "
+DEFB "beat him, but the other shoots ME!"
+DEFB "  didn't you understand that there  "
+DEFB "        were two OF THEM?         "
+DEFB "                                "
+
+DEFB " i turn around and leave. they  "
+DEFB " take the opportunity to shoot ME "
+DEFB "in the back. i knew you were stupid,"
+DEFB " but i didn't know you were also a"
+DEFB "            coward!             "
+
+DEFB "i throw my kamas AT THIS PAIR OF"
+DEFB " idiots but my timing is wrong and"
+DEFB " they miss. but i feel their fists  "
+DEFB "  hit my face PRETTY ACCURATELY!  "
+DEFB "                                "
+
+DEFB " i grab one's gun but the other "
+DEFB "shoots ME WITHOUT EVEN SEEING ME. "
+DEFB " i must stink like a goat! if i had "
+DEFB "   known, i would have worn my    "
+DEFB "           deodorant!           "
+
+DEFB "  i cut their throat but they   "
+DEFB "still have the reflex to shoot! in"
+DEFB "  the hail of bullets there is one  "
+DEFB "that shatters MY HEAD. MAKE YOURS "
+DEFB "           work dude!           "
+
+DEFB " in the middle of the fight, i  "
+DEFB "  try to run away like a coward.  "
+DEFB "they call their buddy from the next "
+DEFB "     room and they break ME!      "
+DEFB "                                "
+
+; -- Processing : LEVEL43.BIN
+;    Sucess Texts : 10
+DEFB "   he fucked up my green sumo   "
+DEFB "buddy! he still hasn't recovered. "
+DEFB " he drinks to forget. it's time for "
+DEFB "             revenge!             "
+DEFB "                                "
+
+DEFB " yes - I ROLLED WITH THE BLOW.  "
+DEFB "still fucking hurt though! my eyes"
+DEFB " don't focus any more. can you help?"
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "bravo. A QUICK STRIKE FROM ABOVE"
+DEFB "               now.               "
+DEFB "   do the sequence TO AVOID IT...   "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " very good. I BARELY AVOID THE  "
+DEFB "strike. it brushes my head. think "
+DEFB "carefully, because i have no margin "
+DEFB "            for error!            "
+DEFB "                                "
+
+DEFB " good. I ATTACK HIS HAND. PASS  "
+DEFB "the sequence to find out if i was "
+DEFB "  precise enough to disarm him...   "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " ok. I HIT HIS HAND PRECISELY,  "
+DEFB "and it makes him drop his weapon. "
+DEFB " now i can approach the big shit... "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "  in the head. ONE LAST HIT...  "
+DEFB "pass the sequence so that the hit "
+DEFB "              hits...               "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "my hit lands in his face. it is "
+DEFB "      his turn to be struck.      "
+DEFB "   i will be able to finish HIM.    "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "this fucker is strong! i wrap my"
+DEFB "  manriki gusari AROUND HIS NECK  "
+DEFB " and i strangle him. his body falls "
+DEFB "  to the ground. this is for my   "
+DEFB "     buddy, the green sumo!     "
+
+DEFB "my sight becomes clear again. he"
+DEFB " made me drool, the asshole. there"
+DEFB "  is a door at the back, it is the  "
+DEFB "  only way to continue. but it's  "
+DEFB "     suspiciously quiet...      "
+
+;    Deaths Texts : 6
+DEFB "   bam. A QUICK BLOW FROM THE   "
+DEFB "nunchaku splits my skull in half. "
+DEFB "  i collapse to my knees. it's not  "
+DEFB "  today that i'm going to avenge  "
+DEFB "           anyone...            "
+
+DEFB "  aie, I WASN'T FAST ENOUGH. I  "
+DEFB "   didn't avoid the blow and he   "
+DEFB "smashes my skull. it's pissing blood"
+DEFB " from everywhere. we'll have to be"
+DEFB "         more careful!          "
+
+DEFB " no. I WASN'T QUICK ENOUGH. MY  "
+DEFB "  strike misses his hand, and i   "
+DEFB "    can't disarm him. he flips a    "
+DEFB "nunchaku in my face and breaks my "
+DEFB "             teeth!             "
+
+DEFB " shit. I COULDN'T HIT HIS HEAD. "
+DEFB "he kicks me in the stomach and, as"
+DEFB "  i fall to my knees, he breaks my  "
+DEFB "              neck.               "
+DEFB "                                "
+
+DEFB "   i throw my chain to try to   "
+DEFB "entangle his nunchaku. it seems to"
+DEFB "   work - but he gives me a kick    "
+DEFB "  making me vomit MY GUTS UP. HE  "
+DEFB "        breaks my neck!         "
+
+DEFB " i try to wrap my chain around  "
+DEFB "    his neck but he releases a    "
+DEFB "powerful kick that blows my spleen. "
+DEFB "it only hurts briefly, because he "
+DEFB "    breaks MY NECK QUICKLY!     "
+
+; -- Processing : LEVEL51.BIN
+;    Sucess Texts : 10
+DEFB "  i take the lid off the case.  "
+DEFB "there's a whole mess under there. "
+DEFB " it looks like an electronic lock.  "
+DEFB "  were you good in high school,   "
+DEFB "             jerk?              "
+
+DEFB "  i press the buttons and the   "
+DEFB " counter starts to panic. I DON'T "
+DEFB "  know if this is good news or bad  "
+DEFB " news! quick - what are we doing  "
+DEFB "          here, jerk?           "
+
+DEFB "yes, GOOD IDEA, IT'S TIME TO CUT"
+DEFB "  some threads. have you studied  "
+DEFB " your classics? green, purple, red? "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "  yes. IT IS THE RIGHT WIRE. I  "
+DEFB " must not tremble while cutting!  "
+DEFB "         pass the sequence          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " well done. THANK GOD YOU DON'T "
+DEFB " tremble like an alchy! you're a  "
+DEFB " joker but at least you know how to "
+DEFB "press keys! better than no skills "
+DEFB "           at all...            "
+
+DEFB "yes, IT'S THIS WIRE THAT MUST BE"
+DEFB "            cut. go...            "
+DEFB "         pass the sequence          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "bravo. yes. I CUT IT CLEAN. THE "
+DEFB "meter is still going down though, "
+DEFB "         so move your ass!          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " well this is the last wire. it "
+DEFB " would be stupid to fuck this one "
+DEFB "                up.                 "
+DEFB "        pass the sequence         "
+DEFB "                                "
+
+DEFB " bravo, I cut cleanly. BUT THE  "
+DEFB "meter is getting even more frantic"
+DEFB " now. something went wrong. come on,"
+DEFB "    find something, fucktard!     "
+DEFB "                                "
+
+DEFB " yes. 'AVE IT! I KEEP BATTERING "
+DEFB "this thing and the meter stops. i "
+DEFB "  hear the lock on the door click   "
+DEFB "     open. i enter slowly...      "
+DEFB "                                "
+
+;    Deaths Texts : 5
+DEFB "i hit the system and everything "
+DEFB " explodes IN MY FACE. IS THERE A  "
+DEFB " time when you think, OYSTER DICK?  "
+DEFB "       how do i stand you?        "
+DEFB "                                "
+
+DEFB "i don't think this is the right "
+DEFB "time to cut wires. besides, i made"
+DEFB " a short with the pliers. everything"
+DEFB "   explodes. my head is torn IN   "
+DEFB "             half.              "
+
+DEFB " i try to pull the wire out by  "
+DEFB "hand, but the vibrations make the "
+DEFB "system explode. IT TEARS OFF MY HAND"
+DEFB "  and half my head. have little   "
+DEFB "        subtlety, baka!         "
+
+DEFB "   no. WRONG WIRE. EVERYTHING   "
+DEFB "explodes. boom! OF COURSE MY BRAIN"
+DEFB " is on the wall not yours. you have "
+DEFB " the right role, you little shit. "
+DEFB "      wanna switch places?      "
+
+DEFB "aie. YOU WEREN'T FAST ENOUGH AND"
+DEFB "   made me tremble when i cut.    "
+DEFB "   everything is exploding! i'm a   "
+DEFB " little tired of dying because of "
+DEFB "         you, NUMBNUTS!         "
+
+; -- Processing : LEVEL52.BIN
+;    Sucess Texts : 8
+DEFB " i think it's a lab. they musta "
+DEFB "done some dirty experiments here. "
+DEFB " this thing here doesn't even look  "
+DEFB "human any more. ah! his right hand"
+DEFB "           is moving!           "
+
+DEFB "he raises his hand toward me. i "
+DEFB "      will have to avoid it.      "
+DEFB "         pass the sequence          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "close one! just managed to avoid"
+DEFB " his hand. his skin is infected. i"
+DEFB " have to stay out of reach of this  "
+DEFB "  shit bag... his other hand is   "
+DEFB "            moving!             "
+
+DEFB " he's raised his hand again - i "
+DEFB "         must avoid it...         "
+DEFB "         pass the sequence          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "phew, I BARELY MADE IT. THERE'S "
+DEFB " no room to avoid him forever, so "
+DEFB "  you really have to do something   "
+DEFB "   fucking spectacular or this    "
+DEFB "    creature's gonna rot me!    "
+
+DEFB " there is an old syringe on the "
+DEFB "floor. i roll and pick it up. i am"
+DEFB "  right next to the creatue - i'll  "
+DEFB "      have to be quick NOW.       "
+DEFB "                                "
+
+DEFB "yes. I STICK THE SYRINGE IN HIS "
+DEFB "  head, being careful not to be   "
+DEFB "   touched. he screams and starts   "
+DEFB "    melting. it's despicable.     "
+DEFB "                                "
+
+DEFB " it looks like bacteriological  "
+DEFB " weapons. unit 731 was working on "
+DEFB "it during world war ii. I THOUGHT IT"
+DEFB "            was over.             "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB "i'm trying to get past this twat"
+DEFB " and get to the back door as fast "
+DEFB "  as i can. but, as i pass by, he   "
+DEFB "   touches me and i collapse...   "
+DEFB "                                "
+
+DEFB " i turn around and try to open  "
+DEFB "the armored door. there's a bloody"
+DEFB " substance on the door... as i touch"
+DEFB "  it i begin to suffocate and i   "
+DEFB "      fall TO THE FLOOR...      "
+
+DEFB " no. I WAS NOT SKILLED ENOUGH,  "
+DEFB " his hand touches me. i feel sick "
+DEFB " and i collapse. THERE IS SOMETHING "
+DEFB "      really unhealthy here.      "
+DEFB "                                "
+
+DEFB "  there's an old syringe lying  "
+DEFB "around. i try to pick it up but i "
+DEFB "get hit by this piece of shit and i "
+DEFB " collapse. WHAT THE FUCK IS THIS? "
+DEFB "                                "
+
+DEFB "i try to hit him in the face but"
+DEFB " when my hand comes into contact  "
+DEFB "with his head, i feel like a poison "
+DEFB "is invading my body... i collapse "
+DEFB "          right after.          "
+
+DEFB "he raised the opposite hand. you"
+DEFB "  really are an asshole. in the   "
+DEFB "  meantime, i'm getting infected,   "
+DEFB " dickhead. dead AGAIN BECAUSE OF  "
+DEFB "              you!              "
+
+; -- Processing : LEVEL53.BIN
+;    Sucess Texts : 7
+DEFB "  i recognize him, it is shiro  "
+DEFB "  ishii, A JAPANESE NAZI WHO DID  "
+DEFB "vile experiments on chinese. he died"
+DEFB " since 1959! what's he doing here?"
+DEFB "                                "
+
+DEFB "  my head is buzzing, as if he  "
+DEFB "were trying to control my mind. i "
+DEFB "must resist. TAKE CARE OF HIM BEFORE"
+DEFB "   he drives me crazy. i am so    "
+DEFB "          confused....          "
+
+DEFB "my head hurts. i try to hit him,"
+DEFB " but he escapes. everything spins."
+DEFB "      do you hear the horses?       "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "    his skull stretches and     "
+DEFB " disappears. his hair stays in my "
+DEFB "hand but goes up in smoke. there are"
+DEFB " lights approaching, maybe it's a "
+DEFB "             train?             "
+
+DEFB " i pick up a bottle placed in a "
+DEFB "corner. i feel that i fall into a "
+DEFB "void. the demons draw me towards the"
+DEFB "   bottom... i will not resist    "
+DEFB "            them...             "
+
+DEFB " in a burst of lucidity i THROW "
+DEFB "    the bottle on the spectre.    "
+DEFB "   everything explodes in a green   "
+DEFB " cloud, and i begin to regain my  "
+DEFB "             mind.              "
+
+DEFB "  i don't know what's going on  "
+DEFB "  here, but it's really strange.  "
+DEFB "   i've heard of the spirit world   "
+DEFB "before, but this is the first time"
+DEFB "   i've had to deal with it.    "
+
+;    Deaths Texts : 3
+DEFB " i grab some old scissors that  "
+DEFB "are lying around and plant them in"
+DEFB " the evaporating ghost, but i feel  "
+DEFB "it penetrating my mind and gnawing"
+DEFB "     at me. i fall apart...     "
+
+DEFB "by the time i grab the bottle of"
+DEFB " poison, the spirit has taken over"
+DEFB "  my body. i literally liquefy. IT  "
+DEFB " was probably not the right time. "
+DEFB "                                "
+
+DEFB "  i try to hit him but my fist  "
+DEFB "  goes through. i feel his power  "
+DEFB "twist my head. for no reason, i pull"
+DEFB " out my dagger and i slit MY OWN  "
+DEFB "            throat.             "
+
+; -- Processing : LEVEL61.BIN
+;    Sucess Texts : 10
+DEFB " you have to be careful, and go "
+DEFB " slowly and gradually. make sure  "
+DEFB " that i do not lose my balance. it  "
+DEFB "           looks deep!            "
+DEFB "                                "
+
+DEFB " very good. I'VE PUT MY FOOT IN "
+DEFB "         the first hole.          "
+DEFB "                                    "
+DEFB "         do the sequence          "
+DEFB "                                "
+
+DEFB "perfect. I HAVE KEPT MY BALANCE."
+DEFB "  these wells are often a beacon  "
+DEFB "for vengeful spirits. i hope that's "
+DEFB "       not the case here...       "
+DEFB "                                "
+
+DEFB "okay. i'm on the second hole. so"
+DEFB "           far so good.           "
+DEFB "                                    "
+DEFB "         do the sequence          "
+DEFB "                                "
+
+DEFB "   bravo. EVERYTHING IS UNDER   "
+DEFB "   control. in japan, it is not   "
+DEFB "uncommon for bodies to be dumped in "
+DEFB "wells. that's why vengeful spirits"
+DEFB "        are often there.        "
+
+DEFB " good. I'M AT THE THIRD HOLE... "
+DEFB "                                  "
+DEFB "          do the sequence           "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "excellent. COME ON, WE'VE ALMOST"
+DEFB "    done the first part of the    "
+DEFB " descent. no sign of an onryo YET - "
+DEFB "  but i'm sure there are horrors  "
+DEFB "         down there...          "
+
+DEFB " perfect. IT'S LOOKING GOOD FOR "
+DEFB "          the last hole.          "
+DEFB "                                    "
+DEFB "         do the sequence.         "
+DEFB "                                "
+
+DEFB "yeahhhhh. EVERYTHING WENT WELL. "
+DEFB " chill bro. we can continue down  "
+DEFB "   like this. i told you that my    "
+DEFB "crampons could traverse anything! "
+DEFB "                                "
+
+DEFB "ahhh shit. A BIG BLOCK OF STONE "
+DEFB "  comes off. i try to grab hold   "
+DEFB "  again, but it's impossible. i'm   "
+DEFB "falling down the well. it's gonna "
+DEFB "            be hot!!            "
+
+;    Deaths Texts : 3
+DEFB " no. IT'S WAY TOO FAR! I JUMPED "
+DEFB " to go down faster - and now i'm  "
+DEFB "going too fast! I TOPPLE HEAD-FIRST "
+DEFB "     and die 30 meters down!      "
+DEFB "                                "
+
+DEFB "ah balls. I SLIP AND SLIDE. IT'S"
+DEFB " impossible to catch anything, and"
+DEFB " i crash 30 meters lower. one flat  "
+DEFB "              ninja!              "
+DEFB "                                "
+
+DEFB "  no YOU DICK. SURELY IT'S NOT  "
+DEFB "difficult to press arrows? in the "
+DEFB "meantime i slide and i smash my head"
+DEFB "        30 meters down...         "
+DEFB "                                "
+
+; -- Processing : LEVEL62.BIN
+;    Sucess Texts : 7
+DEFB " my only chance is to avoid the "
+DEFB "  big obstacles and try to catch  "
+DEFB " hold before i hit the ground. i'm  "
+DEFB "counting on you to find me a way, "
+DEFB "            nutsack.            "
+
+DEFB "bravo. I AVOIDED A HUGE ROOT ON "
+DEFB "  the left side. it would surely  "
+DEFB " have gutted me. be on your guard.  "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " good. A BLADE PROTRUDES ON THE "
+DEFB " right side. i barely avoided it. "
+DEFB "this is the most exciting adventure "
+DEFB "           of my life!            "
+DEFB "                                "
+
+DEFB "yes. SOME KIND OF CLAWS COME OUT"
+DEFB "  on either side of the well. i   "
+DEFB " stay in the centre and avoid being "
+DEFB "  slashed. it was close though!   "
+DEFB "                                "
+
+DEFB " a skeletal hand tries to catch "
+DEFB "me. it is a vengeful spirit, which"
+DEFB " i avoid. yes! MADE ME PISS MYSELF  "
+DEFB " though. and i didn't bring spare "
+DEFB "             pants!             "
+
+DEFB " bravo yes. I'M WELL-POSITIONED "
+DEFB " for the last manoeuvre. i'll be  "
+DEFB "down the well soon. the good news is"
+DEFB " that so far everything is fine!  "
+DEFB "                                "
+
+DEFB "i see the light. i'll be at the "
+DEFB " bottom soon. can you promise me  "
+DEFB "    that i won't turn into okayu    "
+DEFB "            porridge?             "
+DEFB "                                "
+
+;    Deaths Texts : 4
+DEFB "  aie. A BIG ROOT ON THE LEFT   "
+DEFB "side. i was in the wrong position "
+DEFB "to avoid it and it totally ripped me"
+DEFB "  open. i'm hanging by my guts.   "
+DEFB "                                "
+
+DEFB " noooo! A KIND OF BLADE ON THE  "
+DEFB " right side. i couldn't avoid it. "
+DEFB "it cut me in half. i fall down into "
+DEFB "   several pieces. yuck, ninja    "
+DEFB "            sashimi.            "
+
+DEFB "no. SOME KIND OF CLAWS SHOOT OUT"
+DEFB "  from each side of the well and  "
+DEFB "cut me to pieces. ninja karupatcho. "
+DEFB "   that means ninja carpaccio!!   "
+DEFB "                                "
+
+DEFB "ahh no. A SKELETON HAND GRABS ME"
+DEFB "  and tears my head off. it's a   "
+DEFB " kyokotsu - the spirit of a drowned "
+DEFB "man, who seeks revenge by killing "
+DEFB " others. what a son of a bitch! "
+
+; -- Processing : LEVEL63.BIN
+;    Sucess Texts : 9
+DEFB " during the fall, i was able to "
+DEFB "get out my gear. i have fist claws"
+DEFB " and a grapple. i'm moving quickly  "
+DEFB "but if you're skillful i'll get a "
+DEFB "        smooth landing.         "
+
+DEFB "  yes. I PUT ON MY FIST CLAWS.  "
+DEFB " with these i can stick my hands  "
+DEFB " into hard surfaces. it should slow "
+DEFB "down my fall even more. where do i"
+DEFB "          plant them?           "
+
+DEFB "it works. THE MOMENT I REACH THE"
+DEFB "  bottom of the well, i stick my  "
+DEFB "claws into the stone. for a moment, "
+DEFB "my fall is stopped. what do we do "
+DEFB "              now?              "
+
+DEFB "  ok. I'LL GET THE GRAPPLE OUT  "
+DEFB "quickly. i only have a fraction of"
+DEFB " a second to throw it. choose well  "
+DEFB "          or i'll fall!           "
+DEFB "                                "
+
+DEFB "it'S good! THE GRAPPLE WRAPS ON "
+DEFB "a kind of hook that is planted in "
+DEFB "  the top of the vault. my fall is  "
+DEFB "  deflected to the left. i'll be  "
+DEFB "       able to recover...       "
+
+DEFB " okay. i hit the wall a little  "
+DEFB "fast, but there's a sort-of ladder"
+DEFB " bar i can stand on. i'm gonna get  "
+DEFB " bruises, i think, but i'm alive. "
+DEFB "                                "
+
+DEFB "the room is high enough, so it's"
+DEFB " more prudent to go down gently. i"
+DEFB "    catch this second bar, which    "
+DEFB "finally STOPS THIS INFERNAL FALL. "
+DEFB "                                "
+
+DEFB "bravo. ONE LAST JUMP AND HERE I "
+DEFB "am, safe on the ground. fuckwit - "
+DEFB "you almost impressed me there. i'll "
+DEFB " order you a medal on aliexpress! "
+DEFB "                                "
+
+DEFB "i need a few minutes to come to "
+DEFB " my senses. i'm in a kind of big  "
+DEFB "   crypt. there is a passage over   "
+DEFB "       there. we continue!        "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB "aie. I TRY TO REGAIN CONTROL BUT"
+DEFB "  it's impossible. i crash like   "
+DEFB " shit on the stone floor. of my 206 "
+DEFB "bones, i musta broken a good half "
+DEFB "            of them!            "
+
+DEFB " no! I DON'T HAVE 5-METERS ARMS "
+DEFB " you twat! i crash onto the stone "
+DEFB "floor, and feel all my bones break! "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "that wasn't the best thing to do"
+DEFB " there. i only had a few seconds  "
+DEFB "to react but bam! I MISS AND I FALL "
+DEFB "   on the stone floor. my neck    "
+DEFB "           shatters.            "
+
+DEFB "  i launch the grapple but it   "
+DEFB "doesn't catch. i keep falling and "
+DEFB "i smash MY HEAD ON THE STONE FLOOR. "
+DEFB "   you decided to ruin my day!    "
+DEFB "                                "
+
+DEFB " no. YOU MAY NOT HAVE NOTICED,  "
+DEFB "  but this crypt is super big. i  "
+DEFB "think we should swap places. in the "
+DEFB " meantime, i jumped and broke my  "
+DEFB "             legs!              "
+
+DEFB "no. I JUMPED BUT IT WAS TOO FAR."
+DEFB "  i crash to the stone floor. my  "
+DEFB "  head detaches. next time you can  "
+DEFB "   jump instead, you cocky git!   "
+DEFB "                                "
+
+; -- Processing : LEVEL71.BIN
+;    Sucess Texts : 8
+DEFB " with the wind coming from the  "
+DEFB "  right, it would be prudent to   "
+DEFB " follow the wall on the left side.  "
+DEFB "         we'll go slowly.         "
+DEFB "                                "
+
+DEFB "yes, THAT'S GREAT. I STAY TIGHT "
+DEFB " to the wall. the wind pushes me  "
+DEFB " against the wall, but as long as i "
+DEFB " stay on this side, everything is "
+DEFB "             fine.              "
+
+DEFB "good. I CONTINUE ALONG THE LEFT "
+DEFB "  wall. but all of a sudden, the  "
+DEFB " wind shifts and starts to push me  "
+DEFB "        towards the hole.         "
+DEFB "                                "
+
+DEFB "  yes. THE ONLY SOLUTION IS TO  "
+DEFB "     jump to the other side.      "
+DEFB "   do the sequence TO SEE IF THE    "
+DEFB "       jump is successful.        "
+DEFB "                                "
+
+DEFB " yeah. I FALL BACK TO THE OTHER "
+DEFB " side and i keep going along the  "
+DEFB "               wall.                "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "yes. ALL RIGHT. I'LL STAY ON THE"
+DEFB "  right side, right against the   "
+DEFB "      wall. i'm almost there.       "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " bravo. I'M GOING FOR ONE LAST  "
+DEFB " little jump. i'm aiming for the  "
+DEFB "         wall at the back.          "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "i did it. i'm in front of a wall"
+DEFB " made of human skulls. i hope that"
+DEFB " bitch is behind it, because this is"
+DEFB "       taking fucking ages!       "
+DEFB "                                "
+
+;    Deaths Texts : 3
+DEFB " you're serious? THAT I JUMP ON "
+DEFB "the stakes? maybe you SHOULD COME "
+DEFB " and do this! you'll see what it's  "
+DEFB "like to have a dumbass ASSISTANT! "
+DEFB "                                "
+
+DEFB "  no. I JUMP, BUT IT'S WAY TOO  "
+DEFB " far. with this wind, i'm pushed  "
+DEFB "back to the middle and impale myself"
+DEFB "          on the stakes!          "
+DEFB "                                "
+
+DEFB " no. I MISSED MY JUMP. I ALMOST "
+DEFB "managed to jump to the other side,"
+DEFB " but i lost my balance and fell back"
+DEFB "         onto the stakes.         "
+DEFB "                                "
+
+; -- Processing : LEVEL72.BIN
+;    Sucess Texts : 6
+DEFB "some eye sockets seem empty and "
+DEFB "  strangely worn. i think i can   "
+DEFB " stick my finger in and see what's  "
+DEFB "            going on.             "
+DEFB "                                "
+
+DEFB "bingo. MY FINGER SINKS INTO THE "
+DEFB " socket and i hear a click behind "
+DEFB " the wall. this is the beginning of "
+DEFB "  the combination i think. let's  "
+DEFB "          continue...           "
+
+DEFB "yes. AGAIN I HEAR A CLICK. I BET"
+DEFB "    there are 4 digits in the     "
+DEFB " combination. in japan the number 4 "
+DEFB "  is bad luck. it's called shi,   "
+DEFB "    which also means 'dead'.    "
+
+DEFB "good. AND THREE. SOME BUILDINGS "
+DEFB "   here don't have a 4th floor.   "
+DEFB "       people are really very       "
+DEFB "          superstitious.          "
+DEFB "                                "
+
+DEFB "  yesss. I PRESS THE 4TH ORBIT  "
+DEFB "and, as i thought, the wall begins"
+DEFB "  to rotate. i'll be able to slip   "
+DEFB "   through. it really stinks in   "
+DEFB "            there...            "
+
+DEFB " i sneak behind the wall and i  "
+DEFB "  see a kind of vault. there's a  "
+DEFB " stench, but also a cold wind. it's "
+DEFB "all suspicious. i hear some noise "
+DEFB "          in there...           "
+
+;    Deaths Texts : 4
+DEFB " no. IT DOESN'T SEEM TO BE THE  "
+DEFB "   right orbit to start with. 4   "
+DEFB "spears come out of the wall and pass"
+DEFB " through ME. I THINK THERE'S GOING"
+DEFB "       to be a new skull!       "
+
+DEFB "   aie. THIS IS NOT THE RIGHT   "
+DEFB "socket for the second stage of the"
+DEFB "  combination. 4 spears pierce ME   "
+DEFB "         from all sides.          "
+DEFB "                                "
+
+DEFB " no. we're gonna find this code "
+DEFB " eventually, but the spears keep  "
+DEFB " getting ME. HURRY UP AND FIND THE  "
+DEFB "       right combination!!        "
+DEFB "                                "
+
+DEFB "    damn no. IT WASN'T THAT     "
+DEFB "  particular hollow for the last  "
+DEFB "   step. you've killed me again.    "
+DEFB "            dumb fuck!            "
+DEFB "                                "
+
+; -- Processing : LEVEL73.BIN
+;    Sucess Texts : 7
+DEFB " he's actually eating someone's "
+DEFB " head! ew! I MUST NOT LOOK HIM IN "
+DEFB " the face, it will upset him. i'll  "
+DEFB "  turn around. you will have to   "
+DEFB "      guide me backwards!       "
+
+DEFB "yes. I KICK HIS HANDS. IT MAKES "
+DEFB "   him drop the head that he's    "
+DEFB " eating. it'll piss him off, but he "
+DEFB "        won't eat my head.        "
+DEFB "                                "
+
+DEFB "  good. HE'S PISSED OFF. HE'S   "
+DEFB "       trying to catch me.        "
+DEFB "    i have just enough time to dodge"
+DEFB "               him.               "
+DEFB "                                "
+
+DEFB "    very good. I PULL OUT MY    "
+DEFB "throwing dagger, and will briefly "
+DEFB "  turn around to kill it. tell me   "
+DEFB "where to aim, i can't see anything"
+DEFB "           from here.           "
+
+DEFB " good. I THROW MY DAGGER AT HIS "
+DEFB " head. but IT HAS NO EFFECT. CAN  "
+DEFB " you find something else, one last  "
+DEFB "              idea?               "
+DEFB "                                "
+
+DEFB " seem stupid, but the flower i  "
+DEFB " threw at him calms him down. he  "
+DEFB "  picks it up then disappears. HE   "
+DEFB "actually eats the ghosts of people"
+DEFB " that we forget - a lesson, eh? "
+
+DEFB "the flower showed him that i was"
+DEFB " generous with offerings and that "
+DEFB " satisfied him. well done, my boy.  "
+DEFB " who would have thought a flower  "
+DEFB "would do better than my dagger?!"
+
+;    Deaths Texts : 5
+DEFB "i don'T THINK THIS IS THE RIGHT "
+DEFB "time to throw him a flower - he's "
+DEFB " too focused on what he's doing. he "
+DEFB "     jumps on me and eats ME.     "
+DEFB "                                "
+
+DEFB "it's not a good time FOR THAT - "
+DEFB " there's something more important "
+DEFB "to do. he's eating a fucking corpse "
+DEFB "              head!               "
+DEFB "                                "
+
+DEFB " i shift to the side, and this  "
+DEFB " asshole grabs my head and starts "
+DEFB "    eating it. that's not how we    "
+DEFB "             survive!             "
+DEFB "                                "
+
+DEFB "how do you expect me to hit his "
+DEFB "  head when i'm facing the wrong  "
+DEFB " way? as i turned around, the prick "
+DEFB "  jumped at me and ate MY FACE!   "
+DEFB "                                "
+
+DEFB "no. I TURN AROUND AND HIT HIM IN"
+DEFB " the head, but he's too angry. i  "
+DEFB "shot his midnight feast! he grabs my"
+DEFB "  head and starts eating it. the  "
+DEFB "            jackal.             "
+
+; -- Processing : LEVEL81.BIN
+;    Sucess Texts : 7
+DEFB "i can see the light! but i feel "
+DEFB "something evil. the demons of the "
+DEFB "world of darkness are very powerful."
+DEFB "  looks like this one's guarding  "
+DEFB "          the passage!          "
+
+DEFB " ok. I TAKE A SMALL STEP IN THE "
+DEFB " silence. the demon has not seen  "
+DEFB "me. if i continue like this all the "
+DEFB "  way to the passage, i can slip  "
+DEFB "           past him.            "
+
+DEFB "yes. I TAKE A SECOND STEP, AND I"
+DEFB " remain silent. yomi is the realm "
+DEFB "of the dead, filled with old whores."
+DEFB " i wouldn't be surprised if mine  "
+DEFB "       was hiding there!        "
+
+DEFB "bravo. I'M STILL MOVING WITHOUT "
+DEFB "  being spotted by this asshole   "
+DEFB "  demon. he should go back to the   "
+DEFB "   sewers that spewed him out!    "
+DEFB "                                "
+
+DEFB "  yes. I AM BEGINNING TO SLIP   "
+DEFB " silently into the passage. i am  "
+DEFB "almost there. carry on keeping me as"
+DEFB "     invisible as possible...     "
+DEFB "                                "
+
+DEFB " very well. I TAKE ADVANTAGE OF "
+DEFB "the absence of the demon, to enter"
+DEFB " the passage. it is the way to yomi,"
+DEFB "  the world of the dead. i don't  "
+DEFB "     know what to expect...     "
+
+DEFB " the light is so strong that i  "
+DEFB " can't see anything. i go through "
+DEFB "and for a few seconds it's silent..."
+DEFB "     and then i hear water...     "
+DEFB "                                "
+
+;    Deaths Texts : 6
+DEFB "   ouch. THE DEMON catches ME   "
+DEFB "  moving. it invades my soul and  "
+DEFB "sends me into the dimension of hell."
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " no. THE STONES ARE NOT STABLE  "
+DEFB " here. the demon is attracted by  "
+DEFB "the noise, and transports me to the "
+DEFB "           underworld.            "
+DEFB "                                "
+
+DEFB "ouch. THERE'S A BIG ROOT THERE, "
+DEFB "and i've just tripped over it. the"
+DEFB "   demon immediately burns me and   "
+DEFB "  teleports me directly into the  "
+DEFB "         underworld....         "
+
+DEFB " shit. THE GROUND IS WEAK HERE, "
+DEFB "and crumbles beneath me. the demon"
+DEFB " grabs me and sends me to be cursed "
+DEFB "forever in hell! i'm going to meet"
+DEFB "     some friends i think!      "
+
+DEFB " no. I WAS ALMOST THERE, BUT MY "
+DEFB "   feet are sinking into a deep   "
+DEFB " puddle. and now i'm caught by this "
+DEFB "  demon asshole. if you can find  "
+DEFB "         another way...         "
+
+DEFB "  no. I TRY TO RUN THROUGH THE  "
+DEFB "passage, but i stumble on a rock. "
+DEFB "you're gonna have to take it slower "
+DEFB "if you want to avoid that demon's "
+DEFB "           attention.           "
+
+; -- Processing : LEVEL82.BIN
+;    Sucess Texts : 7
+DEFB "my head is half underwater, so i"
+DEFB "   can't see the green and red    "
+DEFB "areas. you're going to have to find "
+DEFB "              them.               "
+DEFB "                                "
+
+DEFB "yes VERY WELL. I MANAGE TO SWIM,"
+DEFB " but with great difficulty. there "
+DEFB "must be kappas here, they are yokais"
+DEFB "   who drown people or animals.   "
+DEFB "                                "
+
+DEFB " perfect. I CAN SWIM THERE. THE "
+DEFB " kappas LOVE TO EAT THE FLESH OF  "
+DEFB " children. doubt they'd want my old "
+DEFB "              skin!               "
+DEFB "                                "
+
+DEFB " that'S good. I'M MOVING TO THE "
+DEFB "  opposite bank!!! these asshole  "
+DEFB "kappas also like cucumbers! if i had"
+DEFB "  one, i'd shove it up his ass!   "
+DEFB "                                "
+
+DEFB "bravo. I AM SOON ON THE SHORE. I"
+DEFB " screwed up my outfit again - it  "
+DEFB "stinks like a wet dog! you're gonna "
+DEFB " have to pay for the dry-cleaners "
+DEFB " when i get out of this mess... "
+
+DEFB "yesssss. HERE I AM SAFELY ON THE"
+DEFB " shore. you know, you're starting "
+DEFB "to grow on me, my little merkin! you"
+DEFB "  have progressed well since the  "
+DEFB "           beginning.           "
+
+DEFB " when i get home i'll get your  "
+DEFB "face tattooed on my buttocks as a "
+DEFB " sign of friendship. it's probably  "
+DEFB "  the smelly air from here that   "
+DEFB "        makes me crazy!         "
+
+;    Deaths Texts : 4
+DEFB "no. BAD IDEA TO GO THROUGH HERE."
+DEFB " i feel something winding round my"
+DEFB "    ankle and dragging me to the    "
+DEFB "bottom. i'm drowned and devoured, "
+DEFB "         or vice versa!         "
+
+DEFB "bad idea HERE TOO. A WHOLE BUNCH"
+DEFB " of nasty critters are eating my  "
+DEFB " belly. my intestines are spreading "
+DEFB "   as the river turns red! find   "
+DEFB "        another way out.        "
+
+DEFB " no. THE CURRENT IS TOO STRONG, "
+DEFB " and my head hits a huge rock. i  "
+DEFB " drown and my corpse is devoured by "
+DEFB "          demonic filth!          "
+DEFB "                                "
+
+DEFB "  ouch! MY HANDS AND FEET ARE   "
+DEFB "caught by some tentacles that draw"
+DEFB "  me deep under the water. i don't  "
+DEFB " think you even want to know what "
+DEFB "            ate me!             "
+
+; -- Processing : LEVEL83.BIN
+;    Sucess Texts : 4
+DEFB "     don't be fooled by its     "
+DEFB "flattering appearance. it's a real"
+DEFB "    bitch in reality. the worst     "
+DEFB "monsters hide under the appearance"
+DEFB "     of beautiful people...     "
+
+DEFB "do you know that nure-onna means"
+DEFB "  wet woman? THAT'S NOT WHAT YOU  "
+DEFB " think, perv! she just lives by the "
+DEFB "    water and often drowns her    "
+DEFB "            victims.            "
+
+DEFB "  well my weapons are ready. i  "
+DEFB "  have my faithful sword, which   "
+DEFB " should come in handy. and you? are "
+DEFB "you ready for this fight? might be"
+DEFB " a good time for a piss break!  "
+
+DEFB "  press action TO GET STARTED!  "
+DEFB " we're going to make her eat her  "
+DEFB "    own demonic shit! go go go!     "
+DEFB "                                  "
+DEFB "                                "
+
+;    Deaths Texts : 0
+; -- Processing : LEVEL91.BIN
+;    Sucess Texts : 11
+DEFB "  it makes her very angry! she  "
+DEFB "turns into a snake demon! i can no"
+DEFB " longer judge her weak points, it is"
+DEFB "     up to you to manage it!      "
+DEFB "                                "
+
+DEFB "good. SNAKES LOVE THEIR TONGUES "
+DEFB " - so hitting her directly in the "
+DEFB " head is a great idea. it surprises "
+DEFB "her and gives me a few seconds to "
+DEFB "             think.             "
+
+DEFB "yes. WELL SPOTTED. SHE'LL TRY TO"
+DEFB "  catch me with her right hand.   "
+DEFB "   do the sequence SO THAT I CAN    "
+DEFB "             escape.              "
+DEFB "                                "
+
+DEFB "  bravo. I DODGE HER HAND. IT   "
+DEFB "pisses her off! did you know that "
+DEFB " the demons originally ate your ass "
+DEFB " to reach your intestines, which  "
+DEFB "      are your conscience?      "
+
+DEFB "ok. SHE'LL PROBABLY HIT ME WITH "
+DEFB "            her tail.             "
+DEFB "          do the sequence           "
+DEFB "         so i can escape.         "
+DEFB "                                "
+
+DEFB " yes. I MAKE A SMALL JUMP AND I "
+DEFB " avoid her powerful tail. usually "
+DEFB "   it's me who's called powerful    "
+DEFB "             tail....             "
+DEFB "                                "
+
+DEFB "phew! I BARELY AVOID HER ATTACK."
+DEFB "    i was told that they could    "
+DEFB " measure up to 300m - i guess even  "
+DEFB "          demons boast!           "
+DEFB "                                "
+
+DEFB "yes. GOOD CALL - SHE WILL TRY TO"
+DEFB "   catch me with her left hand.   "
+DEFB "          do the sequence           "
+DEFB "      so that i can escape.       "
+DEFB "                                "
+
+DEFB "  bravo. I AVOID HER LEFT HAND  "
+DEFB "trying to catch me. she's getting "
+DEFB " more and more angry! go on, go on, "
+DEFB "we'll wear her out a little before"
+DEFB "       we get in her way.       "
+
+DEFB "ok. ONE LAST JUMP TO AVOID A NEW"
+DEFB "  attack by her tail. so far, so  "
+DEFB " good. we're going to knock it up a "
+DEFB "notch, because she's really pissed"
+DEFB "              off!              "
+
+DEFB "    no more laughing now. i     "
+DEFB " destabilized her. i take out my  "
+DEFB " weapons and get stuck into the fat "
+DEFB "  pig! even from the back she's   "
+DEFB "             ugly!              "
+
+;    Deaths Texts : 10
+DEFB "  no. I WAS NOT FAST ENOUGH TO  "
+DEFB "avoid her right hand. she catches "
+DEFB "  me and her tongue advances on my  "
+DEFB "    chest to suck my blood...     "
+DEFB "                                "
+
+DEFB " aie. I WASN'T FAST ENOUGH AND  "
+DEFB "her tail hits me hard. i'm thrown "
+DEFB " a few meters back. she follows to  "
+DEFB "            finish me.            "
+DEFB "                                "
+
+DEFB "no. I WAS TOO SLOW TO DODGE HER "
+DEFB "left hand. she catches me and her "
+DEFB "  tongue nears my chest to suck my  "
+DEFB "             blood...             "
+DEFB "                                "
+
+DEFB "   i'd barely moved when she    "
+DEFB " grabbed me with her tongue - and "
+DEFB "sucked OUT HALF MY BLOOD IN ONE GO. "
+DEFB "i like to get a regular blow job, "
+DEFB "       but this is tough!       "
+
+DEFB "i try something, but she catches"
+DEFB "   me with her right hand. she    "
+DEFB "crushes MY NECK AND THROWS ME IN THE"
+DEFB "  water. i sink and get eaten by  "
+DEFB "         the kappas...          "
+
+DEFB " and no. HER TAIL HITS ME VERY  "
+DEFB " hard when i throw myself to the  "
+DEFB "ground. i barely have time to regain"
+DEFB "   my senses when she comes to    "
+DEFB "           finish me.           "
+
+DEFB "  aie. SHE LAUNCHES A POWERFUL  "
+DEFB "attack while i'm faffing about. it"
+DEFB "    was time to dodge, remember!    "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "i try something but she grabs me"
+DEFB " with her left hand. she crushes  "
+DEFB "my neck, and throws me in the water."
+DEFB "   i sink and get eaten by the    "
+DEFB "           kappas...            "
+
+DEFB " with the element of surprise i "
+DEFB "leap into the air with a powerful "
+DEFB "   flying kick. she grabs me and    "
+DEFB "  crushes my neck. she dumps my   "
+DEFB "      corpse IN THE RIVER.      "
+
+DEFB " i try a roll to get closer to  "
+DEFB " her. but SHE CRUSHES ME WITH HER "
+DEFB "    powerful tail. my spine has     "
+DEFB "    literally turned to jelly!    "
+DEFB "                                "
+
+; -- Processing : LEVEL92.BIN
+;    Sucess Texts : 7
+DEFB "                                "
+DEFB "                                  "
+DEFB "         come on, let's go!         "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "              ok.               "
+DEFB " i avoid her tongue. i'll be able "
+DEFB "         to counter-attack!         "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "         yes good idea.         "
+DEFB "  i have my two knives in hand.   "
+DEFB "          where do i aim?           "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " swish! I STICK A KNIFE IN HER  "
+DEFB "eye! i have the advantage now that"
+DEFB "     she can't see me anymore!      "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB " yes. I DRAW MY SWORD muramasa. "
+DEFB "it's a cursed blade - this should "
+DEFB "              be fun!               "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "  schling!! THE MURAMASA BLADE  "
+DEFB "    cuts her head off with one    "
+DEFB " stroke!!! it rolls on the ground,  "
+DEFB "  with a scream that freezes my   "
+DEFB "             blood.             "
+
+DEFB " she's pissed me off to no end, "
+DEFB "  this one. on that note, i can   "
+DEFB "   finally have a piss. I'VE BEEN   "
+DEFB "  holding it back for 3 levels!   "
+DEFB "                                "
+
+;    Deaths Texts : 7
+DEFB "  i am dead. YOU WERE NOT FAST  "
+DEFB "enough. now's the time to show me "
+DEFB " that you're the main man - let me  "
+DEFB "    have all these sequences!     "
+DEFB "                                "
+
+DEFB " as i move, she catches me with "
+DEFB "  her tongue. in two seconds she  "
+DEFB "sucks out all of my blood. it stings"
+DEFB "  a little. she throws me to the  "
+DEFB "     bottom of the river...     "
+
+DEFB "no, IT'S NOT A GOOD TIME YET TO "
+DEFB "pull out my sword. i'll use it to "
+DEFB "          finish her off.           "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "you think i brought this armoury"
+DEFB " just for show? i have no chance  "
+DEFB "with my bare hands against this fat "
+DEFB "              whore!              "
+DEFB "                                "
+
+DEFB "i shove my knives into her neck."
+DEFB " but BEFORE I CAN FINISH, HER EYES"
+DEFB "  hypnotize me! i'm paralyzed. her  "
+DEFB "tongue pierces me and she empties "
+DEFB "       me of my blood...        "
+
+DEFB " i hold her throat in my hands, "
+DEFB " but her tongue surrounds my head "
+DEFB "and compresses it so tightly that my"
+DEFB " eyes explode. WHAT DO YOU THINK I"
+DEFB "       took my sword for?       "
+
+DEFB "i hit her mouth, but her tongue "
+DEFB "   wraps around my hand and she   "
+DEFB "devours ME RAW. MAYBE YOU WANTED ME "
+DEFB "to snog with a snake? that's your "
+DEFB "          thing, huh?           "
+
+; -- Processing : LEVEL93.BIN
+;    Sucess Texts : 5
+DEFB "but first i'd like to thank you "
+DEFB "  for your help. i couldn't have  "
+DEFB "  succeeded without you. I WAS THE  "
+DEFB " muscles and you were the brain.  "
+DEFB "                                "
+
+DEFB "we're always much stronger toge-"
+DEFB "ther. and believe me, it hurts my "
+DEFB "ass to say that, because i've always"
+DEFB " worked alone. in any case, bravo "
+DEFB "to you, you are almost a ninja! "
+
+DEFB "we'll be able to sing my praises"
+DEFB "  again! ishikawa nagato IS THE   "
+DEFB "most badass ninja of all time!!! my "
+DEFB "      mum will be so proud!!      "
+DEFB "                                "
+
+DEFB "as for you, nobody will remember"
+DEFB " you. we never remember the name  "
+DEFB " of the second. and anyway, i don't "
+DEFB "       even know your name!       "
+DEFB "                                "
+
+DEFB " i don't dislike you, but we're "
+DEFB "not getting married either! maybe "
+DEFB "  we'll find ourselves in another   "
+DEFB "adventure, who knows? live well my"
+DEFB "       little fugu balls!       "
+
+;    Deaths Texts : 0
+; -- Processing : LEVELD1.BIN
+;    Sucess Texts : 1
+DEFB "                                "
+DEFB "       action to continue.        "
+DEFB "  you can start from side b if you  "
+DEFB "              want.               "
+DEFB "                                "
+
+;    Deaths Texts : 0
+; -- Processing : LEVELC1.BIN
+;    Sucess Texts : 2
+DEFB "  a game by christophe kohler   "
+DEFB "                                  "
+DEFB "   (oriens / resistance) may 2020   "
+DEFB "                                  "
+DEFB "  christophe.kohler@gmail.com   "
+
+DEFB "  english translation by clive  "
+DEFB "             townsend             "
+DEFB "                                    "
+DEFB "                                  "
+DEFB "                                "
+
+;    Deaths Texts : 0
+; -- Processing : LEVELC2.BIN
+;    Sucess Texts : 3
+DEFB "        title screen by         "
+DEFB "                                  "
+DEFB "          yotis klapsakis           "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "    file-loading routine by     "
+DEFB "                                  "
+DEFB "       julien nevo (targhan)        "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "    digitized voices code by    "
+DEFB "                                  "
+DEFB "          bruno (kukulcan)          "
+DEFB "                                  "
+DEFB "                                "
+
+;    Deaths Texts : 0
+; -- Processing : LEVELC3.BIN
+;    Sucess Texts : 5
+DEFB "  thanks to arnaud bouche for   "
+DEFB "         cpctELERA HELP.          "
+DEFB "                                    "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "        clive's credits:        "
+DEFB "thanks to christophe for allowing "
+DEFB "me to be part of this ninja project,"
+DEFB "      and andrea pastore for      "
+DEFB "     introducing me to it.      "
+
+DEFB " and thanks to pascal visca and "
+DEFB "  edouard berge - just for being  "
+DEFB "              legends.              "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "                                "
+DEFB "                                  "
+DEFB "             game over              "
+DEFB "                                  "
+DEFB "                                "
+
+DEFB "                                "
+DEFB "                                  "
+DEFB "                                    "
+DEFB "                                  "
+DEFB "                                "
+
+;    Deaths Texts : 0
+; -- Processing : TimeUp Deaths (and stats final string)
+DEFB "  hey fuckwit, WHAT DIDN'T YOU  "
+DEFB " understand when i told you to be "
+DEFB "quick on this one? are you asleep or"
+DEFB "      what? wake up, lamer!       "
+DEFB "                                "
+
+DEFB "  oi, numbnuts, are you still   "
+DEFB "  sleeping? remember that i get   "
+DEFB "fucked WHEN YOU'RE NOT FAST ENOUGH. "
+DEFB "   so chop chop - move faster,    "
+DEFB "          chucklehead!          "
+
+DEFB "can you hear that applause? no, "
+DEFB "  nor me. all you have to do is   "
+DEFB " press buttons and you're not even  "
+DEFB "   capable of that!! shift it,    "
+DEFB "           fucktard!            "
+
+DEFB "failed again. a retarded octopus"
+DEFB " has better reflexes than you! i  "
+DEFB "  was so happy before i met you, i  "
+DEFB " swear. so pull your finger out!  "
+DEFB "                                "
+
+DEFB " you've probably got a brain in "
+DEFB " there... maybe now's the time to "
+DEFB " start actually using it..? you'll  "
+DEFB " have to react faster, son. don't "
+DEFB "       fuck it up AGAIN!        "
+
+DEFB "  you're not just a bit of an   "
+DEFB "    asshole, you're the whole     "
+DEFB " sphincter. will you ever DECIDE TO "
+DEFB "  play well? or does it make you  "
+DEFB "laugh when i get my ass whipped?"
+
+DEFB "here are the stats: i died 0000 "
+DEFB "      times!!! holy shit!!!       "
+DEFB "                                    "
+DEFB "                                  "
+DEFB "                                "
+

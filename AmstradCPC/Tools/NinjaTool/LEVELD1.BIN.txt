@@ -1,0 +1,6 @@
+-----------------------------------------
+LEVELD1.BIN
+   Tourne la disquette   
+  ACTION POUR CONTINUER  Tu pourras démarrer de la seconde face si tu veux. 
+morts:
+None

@@ -1,0 +1,8 @@
+-----------------------------------------
+LEVELC2.BIN
+ Interfaces et retouches images par   CEDRIC QUETIER (CED)  
+Image Titre par   YOTIS KLAPSAKIS   
+Routine chargement fichier par   Julien Nevo (Targhan)   
+Routine voix digitalisées par   Bruno (Kukulcan)   
+morts:
+None

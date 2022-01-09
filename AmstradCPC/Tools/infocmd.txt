@@ -1,0 +1,1336 @@
+﻿
+- FAIT : Definir couleurs banniere (avec graphiste)
+- FAIT : Reflechir a un niveau tutoriel
+- FAIT: Game design, quand je veux faire jouer mes QTE (ils utilisent aussi la barre de temps)
+- FAIT : Reflechir comment stocker les sequences QTE
+- FAIT : Convertir data QTE (il faut palette et design final)
+- FAIT : Definir ou doivent s'afficher les QTE
+- FAIT : Code pour afficher data QTE (et effacement). On a que 5 icones, facile a effacer. On defini a la main les 5.
+- FAIT : Convertir image pour niveau 2
+- FAIT : Faire une QTE de test pour le niveau 2. Un texte puis un QTE. On commence par ca pour tester QTE
+- FAIT : Code une sequence QTE
+- FAIT : Definir interface en haut.  - Compteur de zone (pas eu besoin) - Barre de temps
+- FAIT : Definir comment marche la barre de temps. un u8 qui compte les frames ?. 50 frames = 1 seconde.
+- FAIT : Reflechir comment techniquement ajouter la barre de temps. 
+- FAIT : barre de temps pour QTE ? ==> Non
+- FAIT: Pause entre chaque QTE
+- FAIT: Gestion joystick
+- FAIT : Gestion deux faces. refaire un exe pour la seconde face, c'est pas mal.
+- FAIT : On peut editer la disquete et cacher les fichiers. Comme ca y a que "ninja.bin" qui apparait.
+- FAIT :  Compter nombres de morts.
+- FAIT : Ajouter voix digitalisés. Methode Bruno prends moins de places.
+
+
+// Save and restore registers.
+
+   ex   af, af'
+   exx
+   push af
+   push bc
+   push ix
+   push iy
+   
+   
+	pop iy
+	pop ix
+	pop bc
+	pop af
+	exx
+	ex af,af'   
+   
+   
+
+
+-----------------------------------------------------
+Tailles memoires:
+
+
+Le plus gros niveau : 7978 bytes (niveau 91). (1F2A) adresse 0x9000. 
+La plus grosse musique : 1726 ($6be) (debut actuel des musiques 0x1000)
+Les sfx : c'est dans le code. 168 bytes
+Debut code : $4000 (taille code : 0x486C ) 
+Adresee ecran : 0xC000 (jusqu'a fin)
+Pile en dessous de $C000. (0xBFE5) ... Y a des trucs a partir de 0xABB0
+En 0000 datas du SFX ? ( 0xA8 )... non je crois pas. En memoire il n'y a rien apres 0x50
+
+Total utilisé : 0x1f2a + 0x6be + 0x486c + 0x4000 (écran) + 0x50 (debut) + 0xa8 (sfx) + 0x400 (pile) = B34C
+
+Reste 0x4cb3 pour les digits.
+
+Les 4 sons de bruno prennent 0xC50. Je peux donc en mettre plus et des plus long !
+ 
+// Mapping final :
+0x0150 - 0x080E Musique
+0x0810 - 0x08b8 Sfx
+0x0900 - 0x9C00 Code + data gfx + Digit voice (should not go more than 0x9A00)
+0x9A00 - 0x9C00 Read buffer (512 bytes)
+0x9C00 - 0xBB2A Level
+0XBC00 - 0XC000 Stack
+0XC000 - 0xFFFF Screen 
+
+
+-----------------------------------------------------
+Temps:
+Sur les actions, j'ai besoin d'un temps assez long (jusqu'a 10 secondes). On peut coder ca en dizieme de second. 100=10 secondes. Time
+Sur les QTE, on va jusqu'a 3s. Donc on peut compte en frames. 255 = 2.5s TimePrecise
+
+
+
+-----------------------------------------------------
+
+img2cpc -g -m 0 --outputFormat asm pic11.png
+
+./img2cpc -p config_rgb.json -of c -m 0 -o gfx.c -g -bn tile -h 32 -w 32 Pic11.png
+
+Convert image:
+
+96 x 128 ( by 32x32 is 3 x 4 ) 0 to 11. To left, first line, until bottom.
+
+How to have a palette ?
+A palette can be specified.
+
+Dans le projet image_conversion.mk contient des infos pour convertir fichiers images
+
+Palette pour Pic11 : 0 6 26 (noir blanc rouge) 13 12 3 16 9 25 23 14 4 10 22 15 01 (dernier bleu foncé)
+
+#000000
+FF0000
+FFFFFF
+808080
+808000
+800000
+FF8080
+008000
+FFFF80
+80FFFF
+8080FF
+800080
+008080
+80FF80
+FF8000
+000080
+
+Second version. Avec couleur fixes: Noir,Blanc, rouge, Vert, (tile couleur)
+
+0 26 6 18 (14) 13 12 25 3 16 9 22 23 15 10 17 
+54h, 4Bh, 4Ch, 52h, 5Fh, 40h, 5Eh, 43h, 5Ch, 47h, 56h, 59h, 5Bh, 4Eh, 46h, 4Fh
+
+#000000
+FFFFFF
+FF0000
+00FF00
+8080FF
+808080
+808000
+FFFF80
+800000
+FF8080
+008000
+80FF80
+80FFFF
+FF8000
+008080
+FF80FF
+
+3eme version avec motif de fond en nappe deux couleurs
+Le pattern a comme couleur jaune fonce et violet : 
+
+0    26   6    18  (12)  (4)  13   25 3 16 9 14 10 23 15 17 
+54h, 4Bh, 4Ch, 52h, 5Eh, 58h, 40, 43, 5c, 47, 56, 5f, 46, 5b, 4e, 4f
+
+000000
+FFFFFF
+FF0000
+00FF00
+808000
+800080
+808080
+FFFF80
+800000
+FF8080
+008000
+8080FF
+008080
+80FFFF
+FF8000
+FF80FF
+
+4eme version, on fixe 16 couleurs
+
+0    26   6    18    12,  4 ,  5 , 10 , 8  ,  15,  3 , 9  , 13 , 1  , 25 , 16 
+54h, 4Bh, 4Ch, 52h, 5Eh, 58h, 5Dh, 46h, 4Dh, 4Eh, 5Ch, 56h, 40h, 44h, 43h, 47h
+
+(Cedric:  perso j’éviterai le « gris » (qui est le vris point faible du cpc ^^ Toutes les nuances se maries entre elles , sauf le gris ^^ , ya le bleu/gris ou le vert/gris qui le remplacent tres bien ^^
+13 remplacé par 10
+
+0    26   6    18    12,  4 ,  5 , 10 , 8  ,  15,  3 , 9  , 10 , 1  , 25 , 16 
+54h, 4Bh, 4Ch, 52h, 5Eh, 58h, 5Dh, 46h, 4Dh, 4Eh, 5Ch, 56h, 46h, 44h, 43h, 47h
+
+000000
+FFFFFF
+FF0000
+00FF00
+808000
+800080
+8000FF
+008080
+FF00FF
+FF8000
+800000
+008000
+008080
+000080
+FFFF80
+FF8080
+
+img2cpc utilise des couleurs en RGB.
+
+Firmware Number	Hardware Number	Colour Name	R %	G %	B %	Hexadecimal	RGB values	Colour
+0	54h	Black				0	0	0	#000000	0/0/0	
+1	44h (or 50h)	Blue	0	0	50	#000080	0/0/128	
+2	55h	Bright Blue			0	0	100	#0000FF	0/0/255	
+3	5Ch	Red					50	0	0	#800000	128/0/0	
+4	58h	Magenta				50	0	50	#800080	128/0/128	
+5	5Dh	Mauve				50	0	100	#8000FF	128/0/255	
+6	4Ch	Bright Red			100	0	0	#FF0000	255/0/0	
+7	45h (or 48h)	Purple	100	0	50	#FF0080	255/0/128	
+8	4Dh	Bright Magenta		100	0	100	#FF00FF	255/0/255	
+9	56h	Green				0	50	0	#008000	0/128/0	
+10	46h	Cyan				0	50	50	#008080	0/128/128	
+11	57h	Sky Blue			0	50	100	#0080FF	0/128/255	
+12	5Eh	Yellow				50	50	0	#808000	128/128/0	
+13	40h (or 41h)	White	50	50	50	#808080	128/128/128	
+14	5Fh	Pastel Blue			50	50	100	#8080FF	128/128/255	
+15	4Eh	Orange				100	50	0	#FF8000	255/128/0	
+16	47h	Pink				100	50	50	#FF8080	255/128/128	
+17	4Fh	Pastel Magenta		100	50	100	#FF80FF	255/128/255	
+18	52h	Bright Green		0	100	0	#00FF00	0/255/0	
+19	42h (or 51h)	Sea Green	0	100	50	#00FF80	0/255/128	
+20	53h	Bright Cyan			0	100	100	#00FFFF	0/255/255	
+21	5Ah	Lime				50	100	0	#80FF00	128/255/0	
+22	59h	Pastel Green		50	100	50	#80FF80	128/255/128	
+23	5Bh	Pastel Cyan	50		100	100	#80FFFF	128/255/255	
+24	4Ah	Bright Yellow		100	100	0	#FFFF00	255/255/0	
+25	43h (or 49h)	Pastel Yellow	100	100	50	#FFFF80	255/255/128	
+26	4Bh	Bright White	1	00	100	100	#FFFFFF	255/255/255	
+
+
+
+
+L'image doit avoir deux fois moins de pixels.
+
+donc 48 x 128, decoupé en morceaux de 16x16 par exemple. Ca fait 8x3 = 24 blocs. Ce qui est correct.
+
+Le script .sh ne fonctionne pas alors que lancer la meme commande dans le shell fonctionne (????? a voir pourquoi)
+
+J'ai mis a jour un fichier palette
+
+(./img2cpc -p configpic11.json -of c -m 0 -o gfx.c -g -bn tile -h 16 -w 16 Pic11.png)
+
+./img2cpc -p configpic.json -of c -m 0 -o gfx.c -bn tile -h 16 -w 16 Pic01.png
+
+pointeur 4x8
+
+./img2cpc -p configpic11.json -of c -m 0 -o gfx.c -g -bn tile pointer.png
+
+tiles
+
+./img2cpc -p configpic11.json -of c -m 0 -o gfx.c -g -bn tile BackgroundTile1.png
+
+
+Bug Musique: Trop de code.
+Si je retire du code ca fonctionne. Si j'en ajoute, ca fonctionne plus.
+Y a un soucis d'allocation.
+Il faut faire "make cleanall all" et ca recalcule tout bien.
+
+La musique doit etre appellé toutes les 50eme de seconde, mais mon interruption n'est pas constante. (la vsynch peut etre ratée)
+
+// Comment je peux charger des données ?
+
+Here what i do :
+- Read my data on files
+- Disable firmware (cpct_disableFirmware)
+- Set interruption (cpct_setInterruptHandler)
+- Running main loop -> All is OK
+
+When i want to load the data of the new room :
+- Enable firmware (cpct_reenableFirmware with previous stored firmware code)
+- Disable interruption (or not this doesn't change anything) (cpct_removeInterruptHandler)
+- Read file -> Nasty crash
+
+I don't write data above 0x989C, i shouldn't have overwritten firmware.
+
+http://www.cpcwiki.eu/forum/programming/mixing-firmware-function-and-interruption-(cpctelera)/
+
+u16 fw_pointer = cpct_disableFirmware();
+
+// Your fancy game's code...
+
+cpct_setInterruptHandler(my_fancy_interrupt_function);
+
+// More fancy code...
+
+ // Reenabling the firmware also disables your interrupt handler, as previously stated
+cpct_reenableFirmware(fw_pointer);
+
+//...
+// Your DISK I/O code
+//...
+
+// Disabling firmware again and continuing with the game
+fw_pointer = cpct_disableFirmware();
+
+// Game continues....
+
+And to finish a little question : what is the address area of the firmware i must not write above (i think it's 0xA67C, but i'm not sure) ?
+
+Exemple dans le jeu cobra:
+
+    cpct_reenableFirmware (firmware);
+
+	if (!cinta) //Si se ha cargado de disco hay que inicializar el AMSDOS/PARADOS
+        setupDOS();
+
+    if (idioma)
+        *(u8*)&fichero_datos[4] = '2'; //cargar data2.bin si se seleccionó castellano
+
+    //borrarPantalla();  
+
+    //Llamo a una función propia en vez de cpct_setDrawCharM1(3, 1); porque sólo voy a escribir una vez y 
+    //no necesito cambiar los colores. Así uso 13 Bytes en vez de 84 Bytes de la función cpctelera
+    initDrawChar(); 
+    cpct_drawStringM1("LOADING EXTRA BYTES, PLEASE WAIT ....", (char *) 0xC000/*0xC0A2*/);
+    //Si los cargo directamente en B000 falla por estar aún activo el firmware, por eso los cargo en la memoria de vídeo
+    //y luego los paso a la dirección definitiva, tras desactivar el firmware
+    cargarDatos(9,(u8 *) &fichero_datos[0],(char *) 0xC000);
+    cpct_disableFirmware(); //Ya están cargados los datos temporalmente en la memoria de vídeo, ya no necesito firmware y lo desactivo para liberar #A6FC-...
+    cpct_memcpy ((void*) ADDR_TEXTOS, (void *) 0xC000 , TOTAL_TEXTOS + TOTAL_GRAFICOS + TOTAL_MUSICA); 
+    
+
+void setupDOS() {
+// Procedimiento que hay que llamar nada más ejecutar el main para inicializar el uso de disco para el loader	
+__asm
+    pop hl ;;Guardar la dirección de retorno
+    ld (_stack+1), hl
+    ;;------------------------------------------------------------------------
+    ;; guardar la disquetera que se está usando (se perderá esta información con las llamadas al firmware)
+    ld hl,(#0xbe7d)
+    ld a,(hl)                  
+    ld (_drive+1),a
+
+    ;;------------------------------------------------------------------------
+    ld c,#0xff          	  ;; desactivar temporalmente las roms
+    ld hl, #_start222         ;; execution address for program
+    call #0xbd16  ;;mc_start_program    ;; start it
+
+_start222:: nop
+    call #0xbccb  ;;kl_rom_walk     ;; activar  roms 
+
+    ;;------------------------------------------------------------------------
+    ;; Restaurar la unidad de disquete
+_drive: ld a, #0x00
+    ld hl,(#0xbe7d)
+    ld (hl),a     
+_stack: ld hl, #0x0000
+    push hl ;;Restablecer la dirección de retorno
+
+  __endasm;
+}
+
+void cargarDatos(char longNombre, char *nombreFichero, char *direccionCarga) {
+    //Para que no salte warning 85 por no usar los parámetros. Luego no se genera código 
+    longNombre;
+    nombreFichero;
+    direccionCarga;
+    
+ __asm
+ 	POP IY	;; Guardar la dirección de Retorno para restaurarla después
+    ld a,#01
+    call #0xbc6b ;; cas_noisy off  Para que no muestre el mensaje y pausa "press play then any key"
+
+
+ 	;; Para usar el load del firmware es necesario establecer estos 3 parámetros en los siguientes registros
+ 	;; B = longitud del nombre de ficher (incluido . y extensión; máximo=11)
+ 	;; HL = dirección donde está la cadena de texto con el nombre de Fichero
+ 	;; HL = dirección donde cargar los datos
+
+
+ 	;; Ésto lo hago así porque sólo tengo que recuperar 1 byte, no 2. Y no hay POP para 1 byte. 
+ 	;; Por eso luego hay que pasar el valor de C a B y cambiar el puntero de SP
+    POP BC
+    LD B,C
+    DEC SP
+    POP HL
+
+    ;; DE = dirección para buffer de lectura de 2k (no se usa en disco)
+    ld de, #0xE000
+
+    ;; Llamada al firmware para abrir fichero
+    call #0xbc77 ;;cas_in_open
+
+    ;; Leer el fichero a la dirección indicada en HL
+    POP HL
+    call #0xbc83 ;;cas_in_direct
+
+    ;; Llamada al firmware para cerrar fichero
+    call #0xbc7a ;;cas_in_close
+
+    ;; Restaurar la dirección de retorno (IY no se resetea con las llamadas a firmware de disco ni de cinta)
+    PUSH IY
+
+  __endasm;
+}
+
+---------------------
+Edouard Bergé (Roudoudou) questions sur acces disque:
+
+"utiliser le firmware c'est la méthode la plus universelle, certains font des trackload avec des routines disque maison
+d'un côté c'est plus facile d'utiliser des routines maisons (ça prend que dalle en mémoire et on se met où on veut)
+de l'autre le plus chiant avec les routines maison c'est de préparer sa disquette parce qu'on est en sectoriel et pas en fichiers
+donc je te conseillerai le firmware, surtout si il y a des fonctions existantes en librairie!
+oui, le firmware a besoin de cette zone pour faire les commutations RAM/ROM et mettre ses variables
+Le format le plus courant c'est le DATA, je sais même pas si y a des outils (PC) pour faire des Vendor, tu as 178K pour 64 fichiers max"
+
+---------------------------
+
+grah:
+on peut tout mettre dans un build file
+
+compression:
+
+$(eval $(call ADD2PACK,room1_pack,src/levels/room1.bin))
+$(eval $(call PACKZX7B,room1_pack,src/compressedLevels/))
+
+on peut compresser dand un build file.
+en C:
+	cpct_zx7b_decrunch_s((void *) 0xFFFF,(void *) temp);
+
+music: on peut avoir plusieurs modules et un sfx (voir the rookie thief)
+
+
+Font:
+File generated using CPCtelera/cpct_png2chars
+// Original image size: 64x96 pixels
+// Characters generated: 96
+// Output buffer size: 768 bytes
+
+cpct_drawStringM1 : cette fonction de cpctelera desactive les interruptions et mets en marche l'image ROM de la premiere banque ( 0000 a 3ffff). C'est pour ca que ca bousille tout quand je l'appelle.
+Avec une fonctione qui affiche sprite, ca peut etre pas mal.
+
+----------------------------
+
+Police de character.
+
+Utiliser des sprites, rangés comme la table ascii. Je peux avoir trois versions pour donner de la couleur.
+
+Les couleurs communes: (le texte est en mode 1, donc il utilise que 4 couleurs. J'aimerai noir, blanc, rouge et vert).
+
+0	54h	Black	0	0	0	#000000	0/0/0	
+26	4Bh	Bright White	100	100	100	#FFFFFF	255/255/255
+18	52h	Bright Green	0	100	0	#00FF00	0/255/0	
+6	4Ch	Bright Red	100	0	0	#FF0000	255/0/0	
+
+Si c'est trop petant, on peut essayer avec les demi teintes.
+
+#000000
+#FFFFFF
+#00FF00
+#FF0000
+
+./img2cpc -p configfont.json -of c -m 1 -o font.c -g -bn tile -h 8 -w 8 Fonte8x8.png
+
+Version Cedric:
+
+			"0x000000", // Noir
+			"0x7F7F00", // Kaki
+			"0x7F007F", // Violet sombre
+			"0xFFFF00"  // Jaune
+
+Les morceaux de la banner en bas:
+
+./img2cpc -p configfont.json -of c -m 1 -o font.c BannerBottom.png
+./img2cpc -p configfont.json -of c -m 1 -o font.c BannerTop.png
+./img2cpc -p configfont.json -of c -m 1 -o font.c BannerCenter.png
+./img2cpc -p configfont.json -of c -m 1 -o font.c BannerCorner.png	
+			
+			
+
+
+
+			
+-----------------------------------------------------------------
+
+Taille de jeu : 30min de jeu, en plusieurs fois (code ?)
+
+10 tableaux de 3 images.
+
+1 image d'illustration en chaque tableau qui raconte l'histoire.
+
+(eventuellement agrementer les images avec des sprites qui indiquent une progression).
+
+Histoire: (on viole les copyright avec allegresse) Tenchu vient venger son beau frere qui a été tué par le clan xxx
+La demone Nure-onna, femme serpent
+https://fr.wikipedia.org/wiki/Y%C5%8Dkai (Yokai ce sont les demos)
+https://fr.wikipedia.org/wiki/Liste_des_y%C5%8Dkai
+
+Le Ninja badass va devoir affronter des creatures pour tuer tout ceux qui sont mélés au meurtre de son beau frere.
+
+Un ninja qui se pose sur un toit, qui traverse des pièces, un sous sol, une grotte, un labo, un lac, un cimetière .... etc, etc .... 
+
+1/ Entre du temple
+
+2/ Monter et balade sur les toits
+
+3/ Tomber dans la maison, tuer les hommes de mains
+
+4/ Descendre a la cave, trouver passage secret
+
+5/ Le laboratoire, les cellules
+
+6/ Un puit sombre
+
+7/ Une grotte un lac souterrain
+
+8/ Un cimetiere sous terrains
+
+9/ Le monde des esprits
+
+10/ La rive du fleuve maudit
+
+Les enemis (du plus normal au plus surnaturel)
+
+Camera de surveillance, lasers, chiens, gardes, gardes du corps
+Guerriers, ninjas
+Guerriers de terre
+Mōryō - yōkai qui dévore les cadavres.
+Uwan - esprit habitant les anciens lieux d'habitation abandonnés.
+Yabuguma - au fond des douves du château de Himeji, il entraînait les humains pour les noyer dans la douve.
+
+N°1 Le kirin – 麒麟
+C’est mon yokai chouchou. Bon ok p’têtre parce que je l’aimais déjà avant de connaître le Japon quand j’étais biberonnée de mythologie Chinoise. Le kirin c’est un peu le boss de fin de niveau, mi-dragon, mi-cheval, mi-cerf, il n’apparaît qu’en temps de paix et symbole de justice, vertu et bonté (ouais tout ça ouais). Je trouve ça aussi super drôle que le kirin est maintenant utilisé pour désigner les girafes, les mecs ça a tellement dû faire tilt dans leur tête de voir ce grand quadrupède, avec des tâches en forme d’écailles, et un peu les caractéristique de l’équidé mais avec des cornes.
+
+N°5 Les Furi – 風狸
+Remballez vos blagues sur un certain fandom. Le fūri est un yokai chinois (oui encore), c’est entre le tanuki, la belette et le singe. Ils ont une fourrure type léopard mais une crinière bleu/vert (parce que pourquoi pas !). Son truc à lui c’est des bonds rapides et impressionnants, il « file » comme le vent. Résistant au feu, aux armes blanches mais pas si on les frappe (va comprendre), ils peuvent même ressusciter avec l’aide du vent.
+
+L'armée des morts
+
+
+
+Idee: Afficher des objets ou armes sous formes d'icones sur l'image. Ca laisse des choix au joueur.
+
+Idee: Violer des copyrights (hommage aux jeux d'epoques). Bruce Lee, Jacky Chan, Jet Lee, Takeshi Kitano.
+
+-------------------------------
+
+Gameplay:
+
+1 page de presentation avec du texte pour expliquer la situation pour chaque tableau (le temps que ca charge). Une image et un texte en mode 1 par exemple. LE truc est d'avoir pas mal de texte, hommage aux jeux de l'époque.
+Ensuite 3 tableaux.
+Quand le joueur perds, il recommence l'image. Si il perds 5 fois, il retourne a l'image precedente.
+(voir si on retourne au tableau precedent ?).
+
+--------------------------------------
+
+- Faire un outil qui regroupe les données, le sauve dans un fichier au bon format et qui compresse.
+
+Pour page presentation : image, texte et palette (tailles a definir)
+
+palette
+Liste de textes. Texte = 38 bytes + code changement couleur. On peut avoir une couleur differente = 2 bytes. 38+2 = 40. ( 5*8 = 40 )
+Tableaux scenario (ici definir un max d'étapes et de zones).
+3 images (1 image = 24*6*8  * 3 = 3072 * 3 = 9216
+(Eventuels sprites)
+
+- Penser a un niveau tutorial
+
+---------------------------------------------------------
+
+- routine pour charger un tableau de donnée. Un petit truc pour le moment. (un texte par exemple)
+
+Henri, commande pour compiler son jeu
+
+.\sdcc\bin\sdcc  -mz80 --oldralloc --code-loc 0x0138 --data-loc 0 --no-std-crt0 crt0_cpc.rel putchar_cpc.rel RT01.c
+
+Je charge mes fichiers en 0x8000 et je monte au fur et à mesure. Mon code est en bas et au dessus c’est la ram vidéo, et comme ça j’ai pas eu de pb. En chargeant plus bas il me semlble que ça merdait (la pile peut etre ?).
+
+---------------------------------------------------------
+
+Forcer tableau a une memoire
+
+__at(0x4000) const char _BufferBk0[16384] = {0};
+
+void begin_absolute_code(void) __naked
+{
+    __asm
+          .area ABSCODE (ABS)
+          .org 0x9FFF
+    __endasm;
+}
+
+MyFunctions()…
+
+void end_absolute_code(void) __naked
+{
+    __asm
+        .area CSEG (REL)
+    __endasm;
+}
+
+void main(){
+    cpct_disableFirmware();
+    cpct_setStackLocation(NEW_STACK);
+
+    initMain();
+	
+	
+	
+	
+	
+#include <cpctelera.h>
+#include <stdio.h>
+
+#define LOCATE_ABSOLUTE(AREA,MEM) \
+void AREA (void) __naked { \
+  __asm \
+    .area AREA (ABS) \
+    .org MEM \
+  __endasm; \
+}
+#define LOCATE_RELATIVE(FNAME) \
+void FNAME (void) __naked { \
+  __asm \
+    .area CSEG (REL) \
+  __endasm; \
+}
+
+
+LOCATE_ABSOLUTE(ABS_1, 0x040)
+
+void helloWorld_1() {
+   printf("HelloWorld from 0x040!\n\r");
+}
+
+LOCATE_RELATIVE(REL_1)
+
+void helloWorld_rel() {
+   printf("HelloWorld relatively located!\n\r");
+}
+
+LOCATE_ABSOLUTE(ABS_2, 0x9FFF)
+
+void helloWorld_2() {
+   printf("HelloWorld from 0x9FFF!\n\r");
+}
+
+LOCATE_RELATIVE(REL_2)
+
+//
+// Main
+//
+void main(void) {
+   helloWorld_1();
+   helloWorld_rel();
+   helloWorld_2();
+   // Loop forever
+   while (1);
+}
+
+	
+
+--oldralloc (Does not apply to gbz80): Use the old register allocator. Typically the new allocator is slower, but generates better code (unless --max-allocs-per-node is set to very low values).
+
+ajouter breakpoint __asm
+    db &ed, &ff
+__endasm;
+
+
+
+
+
+
+
+.z80 DIRECTIVE 
+
+Format:  
+
+        .z80 
+
+The  .z80  directive enables processing of only the z80 specific
+mnemonics.  HD64180/Z180 mnemonics encountered without the .hd64
+directive will be flagged with an <o> error.  
+
+     The  .z80  directive  also  selects the Z80 specific cycles
+count output when the -c command line option is specified.  
+
+
+.hd64 DIRECTIVE 
+
+Format:  
+
+        .hd64 
+
+The  .hd64  directive  enables  processing  of  the HD64180/Z180
+specific mnemonics not included  in  the  Z80  instruction  set.
+HD64180/Z180  mnemonics  encountered without the .hd64 directive
+will be flagged with an <o> error.  A synonym of .hd64 is .z180. 
+
+     The  .hd64 directive also selects the HD64180/Z180 specific
+cycles count output when the -c command line  option  is  speci-
+fied.  
+
+
+
+THE .__.CPU.  VARIABLE 
+
+
+     The  value of the pre-defined symbol '.__.CPU.' corresponds
+to the selected processor type.  The default value  is  0  which
+corresponds  to the default processor type.  The following table
+lists the processor types and associated values  for  the  ASZ80
+assembler:  
+
+        Processor Type            .__.CPU. Value
+        --------------            --------------
+            .z80                         0
+        .hd64 / .z180                    1
+
+
+     The  variable '.__.CPU.' is by default defined as local and
+will not be output to the created .rel file.  The assembler com-
+mand line options -g or -a will not cause the local symbol to be
+output to the created .rel file.  
+
+     The  assembler  .globl  directive may be used to change the
+variable  type to  global  causing  its definition to be  output
+to  the .rel file.  The inclusion of the definition of the vari-
+able '.__.CPU.' might be  a  useful  means  of  validating  that
+seperately  assembled files have been compiled for the same pro-
+cessor type.  The linker will report an error for variables with
+multiple non equal definitions.  
+
+
+Z80 REGISTER SET AND CONDITIONS 
+
+
+   The following is a complete list of register designations and
+condition mnemonics:  
+
+        byte registers  -       a,b,c,d,e,h,l,i,r
+        register pairs  -       af,af',bc,de,hl
+        word registers  -       pc,sp,ix,iy
+
+        C -     carry bit set
+        M -     sign bit set
+        NC -    carry bit clear
+        NZ -    zero bit clear
+        P -     sign bit clear
+        PE -    parity even
+        PO -    parity odd
+        Z -     zero bit set
+
+
+
+Z80 INSTRUCTION SET 
+
+
+  The following list specifies the format for each addressing
+mode supported by ASZ80:  
+
+        #data           immediate data
+                        byte or word data
+
+        n               byte value
+
+        rg              a byte register
+                        a,b,c,d,e,h,l
+
+        rp              a register pair
+                        bc,de,hl
+
+        (hl)            implied addressing or
+                        register indirect addressing
+
+        (label)         direct addressing
+
+        offset(ix)      indexed addressing with
+                        an offset
+
+        label           call/jmp/jr label
+
+The  terms  data,  dir,  offset, and ext may all be expressions.
+The terms dir and offset are not allowed to be  external  refer-
+ences.  
+
+   Note  that  not all addressing modes are valid with every in-
+struction,  refer  to the Z80/HD64180/Z180  technical  data  for
+valid modes.  
+
+   The  following  tables  list  all  Z80/HD64180/Z180 mnemonics
+recognized by the ASZ80 assembler.  The designation [] refers to
+a required addressing mode argument.  
+
+Inherent Instructions 
+
+        ccf             cpd
+        cpdr            cpi
+        cpir            cpl
+        daa             di
+        ei              exx
+        halt            neg
+        nop             reti
+        retn            rla
+        rlca            rld
+        rra             rrca
+        rrd             scf
+
+
+Implicit Operand Instructions 
+
+        adc     a,[]            adc     []
+        add     a,[]            add     []
+        and     a,[]            and     []
+        cp      a,[]            cp      []
+        dec     a,[]            dec     []
+        inc     a,[]            inc     []
+        or      a,[]            or      []
+        rl      a,[]            rl      []
+        rlc     a,[]            rlc     []
+        rr      a,[]            rr      []
+        rrc     a,[]            rrc     []
+        sbc     a,[]            sbc     []
+        sla     a,[]            sla     []
+        sra     a,[]            sra     []
+        srl     a,[]            srl     []
+        sub     a,[]            sub     []
+        xor     a,[]            xor     []
+
+
+Load Instruction 
+
+        ld      rg,[]           ld      [],rg
+        ld      (bc),a          ld      a,(bc)
+        ld      (de),a          ld      a,(de)
+        ld      (label),a       ld      a,(label)
+        ld      (label),rp      ld      rp,(label)
+        ld      i,a             ld      r,a
+        ld      a,i             ld      a,r
+        ld      sp,hl           ld      sp,ix
+        ld      sp,iy           ld      rp,#data
+
+        ldd                     lddr
+        ldi                     ldir
+
+
+Call/Return Instructions 
+
+        call    C,label         ret     C
+        call    M,label         ret     M
+        call    NC,label        ret     NC
+        call    NZ,label        ret     NZ
+        call    P,label         ret     P
+        call    PE,label        ret     PE
+        call    PO,label        ret     PO
+        call    Z,label         ret     Z
+        call    label           ret
+
+
+Jump and Jump to Subroutine Instructions 
+
+        jp      C,label         jp      M,label
+        jp      NC,label        jp      NZ,label
+        jp      P,label         jp      PE,label
+        jp      PO,label        jp      Z,label
+
+        jp      (hl)            jp      (ix)
+        jp      (iy)            jp      label
+
+        djnz    label
+
+        jr      C,label         jr      NC,label
+        jr      NZ,label        jr      Z,label
+        jr      label
+
+
+Bit Manipulation Instructions 
+
+        bit     n,[]
+        res     n,[]
+        set     n,[]
+
+
+Interrupt Mode and Reset Instructions 
+
+        im      n
+        im      n
+        im      n
+        rst     n
+
+
+Input and Output Instructions 
+
+        in      a,(n)           in      rg,(c)
+        ind                     indr
+        ini                     inir
+
+        out     (n),a           out     (c),rg
+        outd                    otdr
+        outi                    otir
+
+
+Register Pair Instructions 
+
+        add     hl,rp           add     ix,rp
+        add     iy,rp
+
+        adc     hl,rp           sbc     hl,rp
+
+        ex      (sp),hl         ex      (sp),ix
+        ex      (sp),iy
+        ex      de,hl
+        ex      af,af'
+
+        push    rp              pop     rp
+
+
+--------------------------------------
+
+Commands FDC
+
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+
+CMD Command=READ : 46 00 00 00 C1 02 C1 52 FF 
+RESULT Result=40 80 00 00 00 C1 02 
+
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+
+CMD Command=READ : 46 00 00 00 C2 02 C2 52 FF 
+RESULT Result=40 80 00 00 00 C2 02 
+
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+
+CMD Command=READ : 46 00 00 00 C3 02 C3 52 FF 
+RESULT Result=40 80 00 00 00 C3 02 
+CMD Command=SEEK : 0F 00 00 
+
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+
+CMD Command=READ : 46 00 00 00 C4 02 C4 52 FF 
+RESULT Result=40 80 00 00 00 C4 02 
+
+MOTOR=OFF
+
+
+-------------
+
+EXEC READ=00
+EXEC READ=52
+EXEC READ=45
+EXEC READ=41
+EXEC READ=44
+EXEC READ=20
+EXEC READ=20
+EXEC READ=20
+EXEC READ=20
+EXEC READ=42
+EXEC READ=49
+EXEC READ=4E
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=0E
+EXEC READ=02
+EXEC READ=04
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=54
+EXEC READ=45
+EXEC READ=58
+EXEC READ=54
+EXEC READ=20
+EXEC READ=20
+EXEC READ=20
+EXEC READ=20
+EXEC READ=42
+EXEC READ=49
+EXEC READ=4E
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=02
+EXEC READ=03
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=00
+EXEC READ=E5 (x446)
+EXEC READ=E5
+RESULT Result=40 80 00 00 00 C1 02 
+
+RESULT READ=40
+RESULT READ=80
+RESULT READ=00
+RESULT READ=00
+RESULT READ=00
+RESULT READ=C1
+RESULT READ=02
+
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+
+RESULT READ=20
+RESULT READ=00
+
+CMD Command=READ : 46 00 00 00 C2 02 C2 52 FF 
+
+
+INSTRUCTION : 9 octets
+1 COMMANDE  : &46 - %01000101
+2 DRIVE     : De 0 à 3 pour A à D
+3 Numéro de piste (Selon ID)
+4 Adresse de tête (Selon ID)
+5 Numéro du 1er secteur (Selon ID)
+6 Taille du secteur (Selon ID)
+7 Numéro du dernier secteur à lire
+8 GAP d'écriture (Ne pas confondre avec GAP format)
+9 Longueur secteur : En principe toujours &FF
+-----------------------------------------------
+EXECUTION : Lire autant d'octets que nécéssaire
+
+
+EXEC READ=E5
+...
+EXEC READ=E5
+
+RESULT Result=40 80 00 00 00 C2 02 
+RESULT READ=40 // ET1 BIT 6 : Inutilisé , n'est même pas décoratif .
+RESULT READ=80 // ET2 BIT 7 : Inutilisé
+RESULT READ=00
+RESULT READ=00
+RESULT READ=00
+RESULT READ=C2
+RESULT READ=02
+
+-----------------------------------------------
+RESULTAT  : 7 octets! Registre état 0
+1 Registre état 1
+2 Registre etat 2
+3 Numéro de piste
+4 Adresse de tête
+5 Numéro du secteur
+6 Taille du secteur
+
+
+
+2 - LE REGISTRE D'ETAT 0
+
+On le trouve en  1er  octet  de  la  phase  résultat  .  On peut aussi le consulter isolément par l'instruction 'Lire état d'interruption' .
+BIT 7 & 6 : Ces deux bits fonctionnent conjointement et peuvent fournir 4 informations :
+
+* 7=0 6=0 : L'opération en cours à réussi .
+* 7=0 6=1 : Ou l'exécution à échoué  ou une opération de lecture - écriture vient de se terminer . Ambigu et peu utilisable ...
+
+* 7=1 6=0 :  Instruction  illégale  !  Ne  nourrissez  pas  votre  FDC avec  n'importe quoi !  Ce  bit  est  aussi  mis  si :
+A - On essaye de lire un  état  d'interruption alors que celle-ci n'a pas  eu lieu
+B - Une instruction est  envoyée  vers  un drive branché mais éteint .
+Dans ces 2 cas tous les autres bits seront à 0 . ET0 = &80 .
+
+* 7=1 6=1 : Il faut enlever la  disquette  ou éteindre le drive pendant une opération pour obtenir cette combinaison . Etes vous pervers à ce point
+
+BIT 5 : Se met à 1 dès la fin d'une instruction .
+
+BIT 4 : Mis à  un  si  l'électronique  du  lecteur  de disquette en cours signale une erreur .
+
+BIT 3 : BIT = 1 Si le  lecteur de disquette est déconnecté , la disquette absente ou que vous vouliez faire croire  au  FDC  que votre DD1 a 2 têtes de lecture .
+
+BIT 2 : Numéro de la  tête  sélectionnée  lors  de la phase instruction . Restera toujours à 0 sauf si vous voulez plaisanter ...
+
+BIT 1-0 : Combinaison de 0 à 3 qui vous indique quel drive était actif au moment de l'interruption .
+ 
+
+3 - LE REGISTRE D'ETAT 1
+
+C'est le 2éme octet du résultat . Il ne peut être lu séparément .
+BIT 7 : Mis à 1 sitôt la fin de la piste rencontrée .
+
+BIT 6 : Inutilisé , n'est même pas décoratif .
+
+BIT 5 : DATA ERROR  .  Lors  d'une  opération  d'écriture , une valeur de contrôle est sauvegardée avec  chaque  secteur  (CRC)  .  En  lecture , cette valeur est reconstituée . Si la  valeur  reconstituée est différente de celle lue , il y-à un problème et ce bit  est  mis  à  1 . De même si les 4 valeurs d'ID transmises lors d'une commande de  lecture ne correspondent pas à celles présentes sur la disquette .
+
+BIT 4 : BIT mis si le  temps  de transmission des données est incorrect .
+Respectez la valeur  standard  de  26  Ms  et  n'oubliez  pas d'interdire les interruptions et vous n'aurez pas à vous en soucier .
+
+BIT 3 : Comme BIT 6
+
+BIT 2 : Est mis à 1 si  une opération quelconque de lecture - écriture ne trouve pas le secteur spécifié .
+
+BIT 1 : Mis si on veut écrire sur une disquette protégée .
+
+BIT 0 : Se met à 1 si  un  ID  secteur  ne peut être trouvé ou si la Data Adress Mark est absente .
+
+LE REGISTRE D'ETAT 2
+
+C'est le 3ème octet du résultat il complète les informations fournies par ET2 et ne peut être lu séparément .
+
+BIT 7 : Inutilisé
+BIT 6 : Mis à  1  si  un  secteur  'effacé'  est rencontré au cours d'une opération de lecture écriture .
+
+BIT 5 : Est mis lors d'une erreur  lecture écriture comme le bit 5 de ET1 mais ne concerne que la zone de données .
+
+BIT 4 : Mis à 1 si le  FDC  constate  une différence entre la piste ou se trouve la tête et la piste mentionnée dans l'ID secteur .
+
+BIT 3 : Mis à 1 si une des 3 instruction de comparaison à réussi .
+
+BIT 2 : Mis à 1 si une des 3 instruction de comparaison à échoué .
+
+BIT 1 : Comme BIT 4 .
+
+BIT 0 : Mis si la Data Adress Mark ne peut être trouvée .
+
+LE REGISTRE D'ETAT 3
+
+Ce registre ne peut être lu que par l'instruction 'Tester état des drives'
+BIT 7 : N'est pris en compte que pour certains drives , à ignorer .
+
+BIT 6 : Si ce bit est mis , la disquette est protégée en écriture .
+
+BIT 5 : Si ce bit reste à 0 , il n'y-a pas de disquette dans le lecteur .
+
+BIT 4 : Il est à 1 si la tête est positionnée en piste 0 .
+
+BIT 3 : Si vous avez un lecteur à double tête ce bit sera à 0 sinon à 1.
+
+BIT 2 : Contient le numéro de tête sélectionné si 2 têtes .
+
+BIT 1 - 0 : Unité de drive actuellement prise en compte par le FDC .
+
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+RESULT READ=20
+RESULT READ=00
+CMD Command=READ : 46 00 00 00 C3 02 C3 52 FF 
+EXEC READ=E5 (x510)
+EXEC READ=E5
+RESULT Result=40 80 00 00 00 C3 02 
+RESULT READ=40
+RESULT READ=80
+RESULT READ=00
+RESULT READ=00
+RESULT READ=00
+RESULT READ=C3
+RESULT READ=02
+CMD Command=SEEK : 0F 00 00 
+CMD Command=INTSTAT : 08 
+RESULT Result=20 00 
+RESULT READ=20
+RESULT READ=00
+
+CMD Command=READ : 46 00 00 00 C4 02 C4 52 FF 
+EXEC READ=E5 (x510)
+EXEC READ=E5
+
+RESULT Result=40 80 00 00 00 C4 02 
+RESULT READ=40
+RESULT READ=80
+RESULT READ=00
+RESULT READ=00
+RESULT READ=00
+RESULT READ=C4
+RESULT READ=02
+MOTOR=OFF
+
+--------------------------------------------
+
+Contre le joueur:
+* FAIT: Caz Decas: J'aime bien Pignouf 
+* FAIT: Seb Perso: Lamer ! 
+FAIT: Christophe Kohler : Chez nous dans l'est on a beubeu.
+* FAIT: Kriek TrollKiller : Face de pet!!
+* FAIT: Anthony Fare: "Tronche de cake"
+* FAIT: Carlos Matias: mon poulpe à plus de vertèbres que toi !".
+* FAIT: Carlos Matias: "tu es quelqu'un de très intelligent... j'en suis sûr ! J'aimerais juste savoir Quand!?" (QTE temps)
+* FAIT: Carlos Matias: "quand je pense que sans toi j'étais tranquille..."
+* FAIT: Eric Boulat: "tu n'as pas seulement l'air d'un con, tu en as toute la gamme !" (QTE temps)
+* FAIT: Ana: tête de noeud (33)
+FAIT: kéké
+FAIT: tarlouze
+FAIT: peigne-cul
+FAIT: nounouille
+FAIT: brêle
+FAIT : catin
+* FAIT : Noël Moulin: Mariole (42)
+FAIT : pine d'huitre
+* FAIT : Herve : baka (idiot en japonais) (51)
+FAIT : Ma crotte
+FAIT : boursemolle
+FAIT : Boloss
+FAIT : guignol
+FAIT : traine savate
+FAIT : couillon
+FAIT : "Couille de loup",
+* FAIT :  David Tricaud: Pine d'huître (51)
+FAIT : bouffon
+FAIT : Debile
+FAIT : naze
+FAIT : Abruti, 
+O Fait : Cedric : Donne une médaille (61)
+
+Andouille
+chochotte
+ducon
+lopette
+tâche
+imbecile
+
+Insultes sympas:
+----------------
+* FAIT: Gérald Khayrhalt Mercey : « Tas de chiasse » a pour moi une consonance poétique indéniable. (32)
+* FAIT: David 'Rahow' Kaminski: "Vas fisté ta grand-mère !!" ^^;;;
+* FAIT: Stéphane Buisard: Sac à foutre (33)
+FAIT: Appelle ta mère que je te recommence"
+* FAIT : Sylvain Aum: Gros tas d’immondices ! (42)
+* FAIT : David Tricaud: Raclure de chiotte (42)
+O FAIT : Pascal Jaques: Cul de babouin.... (43)
+FAIT : Va chercher ta mere qu'on te recommence
+FAIT : fumier
+O FAIT : Arnaud Carradore: Vas te faire cuire le cul ! (72)
+O FAIT : Pascal Visa: Retourne dans les égouts qui t'ont vomi ! (81)
+FAIT : mange tes morts
+FAIt : Chiure démoniaque
+* FAIT : Yotis Klapsakis: Tu pues la merde »
+* FAIT : Yotis Klapsakis: « J’voudrais même pas de ta gueule pour me torcher le cul »
+* FAIT : Stéphane Buisard : Elle claque sa mère cela la, hein ?!
+FAIT : morue
+* FAIT : Stéphane Buisard: T’es moche même de dos
+FAIT : crevure
+
+David 'Rahow' Kaminski: "ta mère elle suce des ours"/«ta mere elle suce des ours en enfer»
+James Soban: Je t'encule avec une poignée de sable.....
+Pierre Lannoy: Sac à foutre"
+Amaury Durand: Enculé de salope, fille de putain de bordel à cul de pompe à chiotte de merde !!!
+Christophe Kohler: sa mere la pute!!!!»
+David Tricaud: Pompe a bites
+David Tricaud: Foutriquet
+Amaury Durand: Enculé de salope, fille de putain de bordel à cul de pompe à chiotte de merde !!! (On peut l'entendre le dire par exemple lorsqu'un marteau décide de me fracacer un doigt)
+Carlos Matias: "Les gens biens, c'est rare... les gens comme toi aussi."
+David Tricaud: Les cons ça ose tout, c'est a ça qu'on les reconnait !
+Je vais t'enculer tellement fort, que celui qui arrivera à enlever ma bite de ton cul, on l'appellera le Roi Arthur !"
+Cave à sperme"
+Cuve à foutre"
+"Bois ton jus"
+
+Autres a voir:
+Castelain Didier: Branque eu cince (stupide de bouzeux ou paysan idiot )
+Pascal Jaques: Résidus de fausse couche... Cul de babouin....
+Iann Backer : Face de cul de troll
+Yves Gerey: "T'as pas une gueule de porte bonheur".
+Pierre Lannoy: Ta mère suce des bites en enfer" " Sac à foutre"
+
+Bof:
+Yotis Klapsakis: Peste du butor
+Fabrice Chauvin: bachibouzouk
+Didier Sobud: Macron!
+Miguel Vanhove: Espèce de français
+Roberto Carangelo: Bouffe ton C64 !
+Eric Cottencin: Je t'aurais bien chier pour te refaire, mais ta mère est encore coincé au bord de mon sphincter
+Eric Cottencin: Même Jean-Pierre KOFFE ne parle pas de toi, c'est plutôt mauvais signe pour ton intégrité hygiénique
+Eric Cottencin: Quand je pense que ta mère a perdu 5 secondes de sommeil pour... ça 
+Christophe Kohler: Si j'avais un chien qui avait la même gueule que toi, je lui raserais le cul et je lui apprendrais a marcher a reculons!
+Genjuro Phil Kibagami: Va niquer ta grand mère la salope qui suçait des bites allemandes
+Stéphane Buisard :  Moule à gaufres !
+Stéphane Buisard : Je t’encule Thérèse !
+Yotis Klapsakis: Espèce de Covid20 »
+David Tricaud: Si j'avais un cul comme ta tête, j'aurais honte de chier / Je serai fier de chier
+Yotis Klapsakis: fan de MPokora
+David Tricaud: Je vais tellement te dilater le fion que tu pourras t'asseoir sur un flamby sans l'écraser
+Carlos Matias: "tu tombes bien, j'adore les légumes!"
+Carlos Matias: "T'es du genre à mourir d'un manque de savoir vivre toi..."
+Carlos Matias: "Si ça peut t'aider d'avoir l'impression que quelqu'un écoute tes conneries, lâche toi sur moi, je ne comprends rien à ce que tu dis."
+Carlos Matias: Je t'aime beaucoup... j'aime quand tu es juste présente... surtout quand tu manges"
+Carlos Matias: "quand tu me parles ça me rassure. ... Sur tout le reste."
+Carlos Matias: "t'es vraiment génial !", c'est le premier truc que je te dirais si j'étais quelqu'un d'autre.
+Carlos Matias: "C'est dommage que tu ne comprennes pas ce que je te dis, on aurait pu s'entendre."
+Carlos Matias: "C'est pas que j'm'ennuie... mais t'as pas faim toi ?"
+Carlos Matias: "Le plus amusant chez toi, c'est que je ne sais pas pourquoi tu me fais rire."
+Carlos Matias: "tu connais la chanson de Claude François <<si j'avais un marteau>> ? tu me fais penser à ça... heureusement que j'aime la musique".
+Carlos Matias: "J'espère que tu aimes les grasses matinées... Juste pour être sûr que tu ne me cassera pas les couilles tous les jours à une heure pareil".
+Carlos Matias: "Franchement, j'adore les gens qui gens qui ont des opinions... mais je ne sais pas pourquoi je n'arrive pas te ranger dans cette catégorie..."
+Carlos Matias: "Quand je pense que j'aurai pu ne pas te connaître... c'est con..."
+Carlos Matias: "J'adore t'entendre, tu tournes tout à la dérision... c'est bien ça ?"
+Carlos Matias: "tu me rappelles un génocide!"
+Carlos Matias : "Si xx ne nous avait pas présenté, j'aurais pu ne pas te connaître. D'ailleur je te laisse, j'ai un truc à régler avec xx"
+Carlos Matias: "J'adore l'élégance qui se dégage de te façon de te tenir... bouge pas, j'm'en vais."
+Carlos Matias: "Tu me fais penser à une étoile... quand je regarde ailleurs je ne te vois pas!"
+Carlos Matias: "t'es vraiment une personne brillante ! ... c'est neuf ?"
+Carlos Matias: tu sais, la plupart des humoristes sont d'accords avec le fait qu'on peut rire de tout mais pas avec tout le monde, et là, il faut vraiment que je te laisse..."
+Carlos Matias: "Si tu m'avais connu quand j'étais jeune, ... c'est mieux comme ça pour moi."
+Carlos Matias : "Tu sais comment on dit Couilles en Espagnol ? ... tu m'enverras un sms pour me dire y'a pas d'urgence".
+Carlos Matias : "J'aime bien les gens en général... il faut que j'aille les voir d'ailleurs..."
+Carlos Matias : "Grace à toi, je comprends la différence entre une constellation et une nébuleuse."
+Carlos Matias: "j'ai des amis scientifiques qui travailles sur les rayonnement cosmiques néfastes pour l'Homme,.... il faut absolument que je te les présentes!"
+Carlos Matias: "Je t'aime beaucoup... j'aime quand tu es juste présente... surtout quand tu manges"
+David Tricaud: Le jour où on mettra les cons sur orbite, ben t'aura pas fini de tourner
+Résidu de chromosome Y"
+Fils de partouze"
+T'es aussi paumé qu'un fils de pute le jour de la fête des pères"
+Tronche de fausse couche"
+Vieille trousse à bites"
+"Voleur d'enfants"
+"Je chie dans la pute qui t'a mise au monde"
+"Branlomane végétatif", 
+"Vrais connards", 
+"Sac à foutre", 
+"Enculé de communiste"
+
+Greetings:
+Fra pour mise en relation
+4 play pour l'organisation du portage
+testeurs : retrouver noms.
+
+--------------------------------------------
+
+Ecran Titre ==> Musique C
+00-tutorial  ==> Musique 1
+01-Temple  ==> Musique 4
+02- monter toit  ==> Musique 3
+03-salle temple  ==> Musique 6
+04-sous sol  ==> Musique B
+05-cellules  ==> Musique 2
+Changement de disquette ⇒ Musique D
+06-puit descente  ==> Musique 5
+07-Grotte souterraine  ==> Musique 9
+08 - le monde des esprits  ==> Musique 7
+09- rive fleuve maudit  ==> Musique A
+10 - Fin credits  ==> Musique 8
