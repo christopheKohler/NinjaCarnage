@@ -11,7 +11,7 @@
 ;//  \______  \____|__  |____|_  \____|__  \____|__  /\______  /_______  /
 ;//         \/        \/       \/        \/        \/        \/        \/ 
 ;// By Christophe Kohler 
-;// April 2021
+;// 2024
 ;//-----------------------------LICENSE NOTICE------------------------------------
 ;// License Creative Commons CC-BY-NC-SA
 ;// Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
@@ -51,6 +51,8 @@ STARTLEVELNAME2='1'
 DISPLAYDEBUGMEMORY=0 ; 1 display memory debugger
 NOINTRO=0
 NOMUSIC=0
+ALLOWSKIPLEVEL=0
+LANGAGEDEFAULT=0 ; (if not intro) CurrentLangage: dc.b 1 ; 0=french 1=english ; 0 to 6
 
 ;----------------------------------------------------------------
 
@@ -66,8 +68,8 @@ startup:
 
     move.w #$0200,$dff100 ; no bitplanes
 
-    clr.l $100 ; Debug
-    clr.l $104
+    ;clr.l $100 ; Debug
+    ;clr.l $104
 
 	;move.b #$11,$107 ; Debug, steps
 
@@ -106,7 +108,7 @@ startup:
 ;    move.l 4(a0),$104
   
 	lea COPPIntro1,a0
-    move.l	a0,$dff080
+    move.l	a0,$dff080 
     
 	lea 	Intro_irq,a0
 	move.l (LDOS_BASE).w,a6
@@ -169,7 +171,7 @@ IntroWait:
     ; Sound Resistance
     lea SfxIntroResistance_Desc,a0
     move.l IntroData,a1
-    add.l #32042+5402,a1
+    add.l #42282+5402,a1
     move.l a1,(a0)
     lea $dff000,a6
     jsr _mt_playfx ; channelStatus(d0) = _mt_playfx(a6=CUSTOM, a0=SfxStructurePointer)
@@ -178,28 +180,30 @@ IntroWait:
     bsr waitabit ; Wait 1 second
  
     ; Change copper list to picture
-    bsr InitIntroTitle
-	lea COPPIntro2,a0
+    bsr InitIntroTitle ; And build copper list 2
+    
+	move.l COPPIntro2_ptr,a0
     move.l	a0,$dff080
  
     ; Play audio "Ninja Carnage"
     lea SfxIntroNinjaCarnage_Desc,a0
     move.l IntroData,a1
-    add.l #32042+5402+12272,a1
+    add.l #42282+5402+11172,a1
     move.l a1,(a0)
     lea $dff000,a6
     jsr _mt_playfx ; channelStatus(d0) = _mt_playfx(a6=CUSTOM, a0=SfxStructurePointer)
     
-    bsr waitabit ; Wait 1 second
-    bsr waitabit ; Wait 1 second
-    bsr waitabit ; Wait 1 second      
+    bsr IntroAnimTitle
+    
+    ; Start scrolling  (done in IRQ)
+    move.b #0,gTextScrollAnimationCounter ; start effect
         
     ; Start intro music
+    if NOMUSIC==0
     bsr MusicStartIntro
-
-    ; Scroll (done in IRQ)
+    endc
     
- IntroWait2:
+IntroWait2:
 	Btst	#6,$bfe001		; Left mouse button
 	Bne.w	IntroWait2  
 
@@ -217,7 +221,7 @@ IntroWait:
     ; Play audio "Ninja Carnage"
     lea SfxIntroNinjaCarnage_Desc,a0
     move.l IntroData,a1
-    add.l #32042+5402+12272,a1
+    add.l #42282+5402+11172,a1
     move.l a1,(a0)
     lea $dff000,a6
     jsr _mt_playfx ; channelStatus(d0) = _mt_playfx(a6=CUSTOM, a0=SfxStructurePointer)    
@@ -229,6 +233,9 @@ IntroWait:
     
     
     ; -- Game init
+    
+	lea COPPEmpty,a0  ; Use a temporary empty static copper list, because the function Init is going to erase the place where the current intro copperlist is, will create glitch
+    move.l	a0,$dff080     
 
 	bsr		Init ; Init pointers
     
@@ -483,7 +490,6 @@ ClearSecondScreen:
 
 ;----------------------------------------------------------------  
 IntroTestFlagClic: ; D0=failed , 1=Sucess
-
     ; Line 1
     ; Test Greek
     move.w #$c7,d0 ; xmin
@@ -919,14 +925,14 @@ IntroDisplayLogo:
     bsr ClearSecondScreen
 
     ; IntroData
-    ; IntroTitle.ami 32042 (320*200*16)
+    ; IntroTitle.ami 42282 (320*200*16) 42282
     ; IntroLogo.ami 5402 (224*64*8)
     ; Font_8ColorsIntro_pal.bin 16 bytes
     ; Font_8ColorsIntro.bin 1536 bytes
     
     ; logo colors copy
     move.l IntroData,a0
-    add.l #32042,a0
+    add.l #42282,a0
     add.l #2+2+2+4+2,a0
     lea IntroPalettePtr,a1
     add.l #8*4,a1
@@ -1013,12 +1019,108 @@ LOGO1BITPLAN=28*64
     rts
     
 ;----------------------------------------------------------------
+
+COPPIntro2_ptr: dc.l    0
+IntroScrollLines_ptr: dc.l 0
+
 ; Title screen (and scrolling)
 InitIntroTitle:
+    ; Build copper list.
+    move.l  #HAMPLANS+2560,a5 ; We need about 5K for this copper list.
+    move.l  a5,COPPIntro2_ptr
+    move.l  #$01800000,(a5)+ ; dc.w	$0180,$000
+    move.l  #$01000200,(a5)+ ; DC.L	$01000200,$01020000
+    move.l  #$01020000,(a5)+ ; 
+    move.l  #$010a0000,(a5)+ ; dc.l    $010a0000,$01080000 ; Modulo 0	
+    move.l  #$01080000,(a5)+ ; 
+    move.l  #$01040064,(a5)+ ; dc.l    $01040064 ; BPLCON2. All sprite in front.  
+    move.l  #$01fc0000,(a5)+ ; dc.l	$01fc0000,$010c0011 ; Aga fix
+    move.l  #$010c0011,(a5)+ ;
+    ; Sprite
+    lea Sprite_nul,a0
+    move.l a0,d0 ; low
+    move.l a0,d1
+    swap d1 ; high
+    ;IntroSpr2:	
+    move.w #$0120,(a5)+ ; dc.l	$01200000,$01220000 ; spr 0. Cursor. 4 colors
+    ; dc.l	$01240000,$01260000 ; spr 1  Unused
+    ; dc.l    $01280000,$012a0000 ; spr 2  Unused
+    ; dc.l	$012c0000,$012e0000 ; spr 3  Unused
+    ; dc.l    $01300000,$01320000 ; spr 4  Unused
+    ; dc.l	$01340000,$01360000 ; spr 5  Unused
+    ; dc.l    $01380000,$013a0000 ; spr 6  Unused
+    ; dc.l	$013c0000,$013e0000 ; spr 7  Unused
+    move.w d1,(a5)+
+    move.w #$0122,(a5)+
+    move.w d0,(a5)+
+    move.w #$0124,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$0126,(a5)+
+    move.w d0,(a5)+
+    move.w #$0128,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$012a,(a5)+
+    move.w d0,(a5)+
+    move.w #$012c,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$012e,(a5)+
+    move.w d0,(a5)+
+    move.w #$0130,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$0132,(a5)+
+    move.w d0,(a5)+
+    move.w #$0134,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$0136,(a5)+
+    move.w d0,(a5)+
+    move.w #$0138,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$013a,(a5)+
+    move.w d0,(a5)+
+    move.w #$013c,(a5)+ 
+    move.w d1,(a5)+
+    move.w #$013e,(a5)+
+    move.w d0,(a5)+        
+    ;  Sprite colors
+    move.l  #$01a00000,(a5)+;        dc.l    $01a00000 ; color 16 ; Transparent
+    move.l  #$01a20888,(a5)+;        dc.l    $01a20888 ; color 17 ; Cursor Color 1
+    move.l  #$01a40000,(a5)+;        dc.l    $01a40000 ; color 18 ; Cursor Color 2
+    move.l  #$01a60fff,(a5)+;        dc.l    $01a60fff ; color 19 ; Cursor Color 3
+    ;  Color remaining (12)
+    move.l  #$01a80000,(a5)+;        dc.l    $01a80000,$01aa0000,$01ac0000,$01ae0000
+    move.l  #$01aa0000,(a5)+
+    move.l  #$01ac0000,(a5)+
+    move.l  #$01ae0000,(a5)+
+    move.l  #$01b00000,(a5)+;        dc.l    $01b00000,$01b20000,$01b40000,$01b60000
+    move.l  #$01b20000,(a5)+
+    move.l  #$01b40000,(a5)+
+    move.l  #$01b60000,(a5)+
+    move.l  #$01b80000,(a5)+; dc.l    $01b80000,$01ba0000,$01bc0000,$01be0000
+    move.l  #$01ba0000,(a5)+
+    move.l  #$01bc0000,(a5)+
+    move.l  #$01be0000,(a5)+
+    move.l a5,a1 ; store IntroPalettePtr2
+    ; IntroPalettePtr2:
+    move.l  #$01800000,(a5)+ ; dc.w    $0180,$0F00,$0182,$0FFF ; 16 colors
+    move.l  #$01820000,(a5)+
+    move.l  #$01840000,(a5)+ ; dc.w    $0184,$0888,$0186,$0F00
+    move.l  #$01860000,(a5)+
+    move.l  #$01880000,(a5)+ ; dc.w    $0188,$00F0,$018A,$000F
+    move.l  #$018A0000,(a5)+
+    move.l  #$018C0000,(a5)+ ; dc.w    $018C,$0F0F,$018E,$0FF0
+    move.l  #$018E0000,(a5)+
+    move.l  #$01900000,(a5)+ ; dc.w    $0190,$00FF,$0192,$0808
+    move.l  #$01920000,(a5)+
+    move.l  #$01940000,(a5)+ ; dc.w    $0194,$0008,$0196,$0FF8
+    move.l  #$01960000,(a5)+
+    move.l  #$01980000,(a5)+ ; dc.w    $0198,$088F,$019A,$0F88
+    move.l  #$019A0000,(a5)+
+    move.l  #$019C0000,(a5)+ ; dc.w    $019C,$08F8,$019E,$0F84
+    move.l  #$019E0000,(a5)+
     ; Title colors copy
     move.l IntroData,a0
     add.l #2+2+2+4,a0
-    lea IntroPalettePtr2,a1
+    ;lea IntroPalettePtr2,a1 ; Already in there
     add.l #2,a1
     move.w #16-1,d0
 .loopcolor:
@@ -1026,19 +1128,126 @@ InitIntroTitle:
     add.l #4,a1
     dbra d0,.loopcolor
     ; a0 is plane here
-
+    move.l  #$2b07fffe,(a5)+ ; dc.b    $2b,$07,$ff,$fe ; First line 
+    move.l a5,a1
+    ;IntroPlansPtrIntro2:
+    move.l  #$00e00000,(a5)+ ; Dc.l	$00e00000,$00e20000 ; 16 colors
+    move.l  #$00e20000,(a5)+
+    move.l  #$00e40000,(a5)+ ; Dc.l	$00e40000,$00e60000 
+    move.l  #$00e60000,(a5)+        
+    move.l  #$00e80000,(a5)+ ; Dc.l	$00e80000,$00ea0000
+    move.l  #$00ea0000,(a5)+
+    move.l  #$00ec0000,(a5)+ ; Dc.l	$00ec0000,$00ee0000
+    move.l  #$00ee0000,(a5)+
+    ; Set pointers
     move.l a0,d0
-    lea IntroPlansPtrIntro2,a0
-    bsr     Put_pointeurs
-    add.l #40*200,d0
+    ;lea IntroPlansPtrIntro2,a0
+    move.l a1,a0
+    bsr Put_pointeurs
+    add.l #40*264,d0
     add.l #8,a0
-    bsr     Put_pointeurs
-    add.l #40*200,d0
+    bsr Put_pointeurs
+    add.l #40*264,d0
     add.l #8,a0
-    bsr     Put_pointeurs
-    add.l #40*200,d0
+    bsr Put_pointeurs
+    add.l #40*264,d0
     add.l #8,a0
-    bsr     Put_pointeurs
+    bsr Put_pointeurs
+    ;  dc.b    $2c,$df,$ff,$fe ; First line 
+    move.l  #$2cdffffe,(a5)+
+    move.l  #$01004200,(a5)+ ;  Dc.l    $01004200 ; Planes
+    ; IntroScrollLines: ; 5 longs = 20 bytes. WAIT, $100 (nb planes) , $10A , $108 (modulos), $102 (decay)       
+    ; dc.b    $2c+$00,$df,$ff,$fe,$01,$00,$42,$00,$01,$0a,$00,$00,$01,$08,$00,$00,$01,$02,$00,$00
+    move.l a5,IntroScrollLines_ptr
+    ; blk.b   200*20,0
+    ; lea IntroScrollLines,a0
+    move.b #$2c,d0
+    move.w #200-1,d5
+.loopbuild
+    move.b d0,(a5)+
+    move.b #$df,(a5)+
+    move.b #$ff,(a5)+
+    move.b #$fe,(a5)+
+    move.b #$01,(a5)+
+    move.b #$00,(a5)+
+    move.b #$02,(a5)+ ; 02 Start all black (else 4200 for 4 planes)
+    move.b #$00,(a5)+    
+    move.b #$01,(a5)+
+    move.b #$0a,(a5)+
+    move.b #$00,(a5)+ ; 10
+    move.b #$00,(a5)+  
+    move.b #$01,(a5)+
+    move.b #$08,(a5)+
+    move.b #$00,(a5)+ ; 14
+    move.b #$00,(a5)+  
+    move.b #$01,(a5)+
+    move.b #$02,(a5)+
+    move.b #$00,(a5)+
+    move.b #$00,(a5)+      
+    add.b #1,d0
+    dbra d5,.loopbuild
+    ; dc.b    $2c+200,$df,$ff,$fe ; 200 lines = end 
+    move.b  #$2c+200,(a5)+ 
+    move.b  #$df,(a5)+ 
+    move.w  #$fffe,(a5)+    
+    move.l  #$01000200,(a5)+ ; DC.L	$01000200
+    ;IntroTitleScrollTextPal:
+    move.l a5,a1
+    move.l  #$01800000,(a5)+ ; dc.w    $0180,$0F00,$0182,$0FFF ; 16 colors
+    move.l  #$01820000,(a5)+
+    move.l  #$01840000,(a5)+ ; dc.w    $0184,$0888,$0186,$0F00
+    move.l  #$01860000,(a5)+
+    move.l  #$01880000,(a5)+ ; dc.w    $0188,$00F0,$018A,$000F
+    move.l  #$018A0000,(a5)+
+    move.l  #$018C0000,(a5)+ ; dc.w    $018C,$0F0F,$018E,$0FF0
+    move.l  #$018E0000,(a5)+
+    ; Init font palette
+    lea TextPaletteIntro+2,a0 ; Palette 8 colors
+    ;lea IntroTitleScrollTextPal,a1 ; dest
+    add.l #2,a1
+    move.w #$0000,(a1)+
+    add.l #2,a1
+    move.w #7-1,d0
+.loopcopycolorsBanner2
+    move.w (a0)+,(a1)
+    add.l #4,a1
+    dbra d0,.loopcopycolorsBanner2        
+    ;IntroTitleScrollTextPtr:
+    move.l a5,a1
+    move.l  #$00e00000,(a5)+ ; Dc.l	$00e00000,$00e20000 ; 8 colors
+    move.l  #$00e20000,(a5)+
+    move.l  #$00e40000,(a5)+ ; Dc.l	$00e40000,$00e60000   
+    move.l  #$00e60000,(a5)+
+    move.l  #$00e80000,(a5)+ ; Dc.l	$00e80000,$00ea0000
+    move.l  #$00ea0000,(a5)+     
+    ; Scroll text here. 8 lignes
+    ; Plans
+    lea HAMPLANS+1280,a0
+    move.l a0,d0
+    ;lea IntroTitleScrollTextPtr,a0
+    move.l a1,a0
+    bsr Put_pointeurs
+    add.l #8*40,d0
+    add.l #8,a0
+    bsr Put_pointeurs
+    add.l #8*40,d0
+    add.l #8,a0
+    bsr Put_pointeurs       
+    ; dc.b    $2c+201,$df,$ff,$fe ; 200 lines = end  
+    move.b  #$2c+201,(a5)+ 
+    move.b  #$df,(a5)+ 
+    move.w  #$fffe,(a5)+     
+    ; DC.L	$01003200,$01080000,$010a0000
+    move.l  #$01003200,(a5)+
+    move.l  #$01080000,(a5)+
+    move.l  #$010a0000,(a5)+
+    ; dc.b    $2c+201+8,$df,$ff,$fe ; 200 lines = end 
+    move.b  #$2c+201+8,(a5)+ 
+    move.b  #$df,(a5)+ 
+    move.w  #$fffe,(a5)+     
+    ; dc.l    $01000200
+    move.l  #$01000200,(a5)+
+    move.l  #$fffffffe,(a5)+; Dc.l	$fffffffe ; end
     
     ; -- Scrolling
     ; Use space at  HAMPLANS + 1280   
@@ -1048,36 +1257,9 @@ InitIntroTitle:
 .ClearLoop:
     clr.l (a0)+
     dbra d0,.ClearLoop   
-    
-    ; Text Scroll
-; IntroTitleScrollTextPal:
-; IntroTitleScrollTextPtr:
-
-     ; Init font palette
-    lea TextPaletteIntro+2,a0 ; Palette 8 colors
-    lea IntroTitleScrollTextPal,a1 ; dest
-    add.l #2,a1
-    move.w #$0000,(a1)+
-    add.l #2,a1
-    move.w #7-1,d0
-.loopcopycolorsBanner2
-    move.w (a0)+,(a1)
-    add.l #4,a1
-    dbra d0,.loopcopycolorsBanner2    
-    ; Plans
-    lea HAMPLANS+1280,a0
-    move.l a0,d0
-    lea IntroTitleScrollTextPtr,a0
-    bsr     Put_pointeurs
-    add.l #8*40,d0
-    add.l #8,a0
-    bsr     Put_pointeurs
-    add.l #8*40,d0
-    add.l #8,a0
-    bsr     Put_pointeurs   
 
     ; Init scroll text
-    move.b #0,gTextScrollAnimationCounter ; start effect
+    
     ; Display text
     lea TextsIntro,a0
     clr.l d0
@@ -1090,9 +1272,141 @@ InitIntroTitle:
     add.l #(7*41)-1,a0
     move.b #255,(a0) ; end marker on last byte
     move.b #0,gTextScrollWaitTime
-   
+  
     rts
     
+; ---------------------------------------------------    
+IntroAnimTitle:
+    movem.l	d0-d7/a0-a6,-(sp)			;save all registers to stack
+
+    ; Loop display
+    move.w #200-1,d5 ; 200-1
+    clr.l d0
+    move.l IntroScrollLines_ptr,a0
+    move.l a0,a5
+    add.l #(200*20),a5 ; end
+
+.loopDisplay
+    ; a0 is starting line of effect
+    move.l a0,a1
+    
+    ; compute start offset
+    clr.l d2
+    move.b d0,d2 ; d0 0 to 200
+    mulu #40,d2 ; start offset (help to compute when a line will be out of screen) ; 200*40 is end picture 
+    move.w d2,d3 ; real modulo (d2 is wanted modulo)
+    
+    move.b #0,d4 ; Flag to tell(we reached bottom)
+    
+    ; --Process table (the roll effect)
+    lea TableIntroTitle,a2
+.looptable  
+    move.b #$42,6(a1)  ; nb plan
+    ; Visible or not visible ? (is pointing out of picture ?)
+    ; If yes, then display normal line.
+    add.w (a2),d2 ; Current offset
+
+    cmp.l #200*40,d2
+    bhi .outofpicture
+    ; ----------------------------Inside picture
+    cmp.b #1,d4 ; jump modulo have been skipped ?
+    beq .moduloskipped
+    
+    add.w (a2),d3 ; real modulo
+    move.w (a2),10(a1) ; modulo   
+    move.w (a2),14(a1) ; modulo     
+    bra .continue
+.moduloskipped:    
+; need to inject a new "jump" modulo (to go to end of picture)
+    move.b #0,d4 ; reset flag
+    move.w d2,d6
+    sub.w d3,d6
+    move.w d6,10(a1) ; modulo   "jump" to end of picture
+    move.w d6,14(a1) ; modulo
+    move.w d2,d3 ; save current wanted modulo = real module
+    bra .continue
+.outofpicture:  ; ------------------------ out of picture
+    ; Compute modulo to stay in picture
+    move.w #0,10(a1) ; modulo   
+    move.w #0,14(a1) ; modulo  
+    move.b #1,d4 ; Say "from this line we were out of picture" so "jump" modulo have been skipped, need to inject a new one
+.continue:
+    ; go to next table line, and next copper line
+    add.l #2,a2
+    add.l #5*4,a1
+    cmp.l a1,a5
+    beq .next ; end of copper ?
+    cmp.w #$ffff,(a2) ; end of table ?
+    bne .looptable
+    
+.next    
+    bsr wait1Frame ; wait a frame, and add new line
+    add.l #5*4,a0
+    add.l #1,d0 ; next starting line
+    dbra d5,.loopDisplay 
+
+    movem.l	(sp)+,d0-d7/a0-a6			;save all registers to stack
+
+    rts    
+
+TableIntroTitle:
+    dc.w    0*40
+    dc.w    49*2*40
+    dc.w    -4*40
+    dc.w    -4*40
+    dc.w    -4*40
+    dc.w    -4*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -1*40
+    dc.w    -2*40
+    dc.w    -1*40
+    ; mid
+    dc.w    -1*40
+    dc.w    -2*40    
+    dc.w    -1*40
+    dc.w    -2*40    
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -2*40   
+    dc.w    -2*40
+    dc.w    -2*40 
+    dc.w    -2*40
+    dc.w    -2*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -3*40
+    dc.w    -4*40
+    dc.w    -4*40   
+    dc.w    -4*40
+    dc.w    -4*40 
+    
+    dc.w    $ffff
+    
+    
+    
+
 ; ---------------------------------------------------
 ; IntroDisplayLetter8TitleScroll
 ; d0 is X
@@ -1254,6 +1568,7 @@ IntroBloodEffect:
 .outofscreen:    
     dbra d5,.allPoints
     ; iterate all points
+    bsr wait1Frame
     dbra d6,.mainLoop
     rts
  ;----------------------------------------------------------------    
@@ -1303,6 +1618,7 @@ IntroBloodEffectBlack:
 .outofscreen:    
     dbra d5,.allPoints
     ; iterate all points
+    bsr wait1Frame
     dbra d6,.mainLoop
     rts   
 
@@ -1322,18 +1638,19 @@ IntroBloodDrawPoint:
     add.l d2,a3 ; Word on screen
     move.w d5,d2
     and.w #$7,d2 ; bit number.
-    ; we want color 5, so planes will be 1, 0, 1, 0.
-    ; Set bit on plane 1
-    bset.b d2,(a3)
-    add.l #200*40,a3
-    ; Clea bit on plane 2
+    ; OLD: we want color 6, so planes will be 0, 1, 1, 0. (high)
+    ; we want color 12, so planes will be     0, 0, 1, 1.
+    ; bit on plane 1
     bclr.b d2,(a3)
-    add.l #200*40,a3   
-    ; Clea bit on plane 3
-    bset.b d2,(a3)
-    add.l #200*40,a3     
-    ; set bit on plane 4
+    add.l #264*40,a3
+    ; bit on plane 2
     bclr.b d2,(a3)
+    add.l #264*40,a3   
+    ; bit on plane 3
+    bset.b d2,(a3)
+    add.l #264*40,a3     
+    ; bit on plane 4
+    bset.b d2,(a3)
 .outofscreen:    
     rts
     
@@ -1355,13 +1672,13 @@ IntroBloodClrPoint:
     ; we want color 5, so planes will be 1, 0, 1, 0.
     ; Set bit on plane 1
     bclr.b d2,(a3)
-    add.l #200*40,a3
+    add.l #264*40,a3
     ; Clea bit on plane 2
     bclr.b d2,(a3)
-    add.l #200*40,a3   
+    add.l #264*40,a3   
     ; Clea bit on plane 3
     bclr.b d2,(a3)
-    add.l #200*40,a3     
+    add.l #264*40,a3     
     ; set bit on plane 4
     bclr.b d2,(a3)
 .outofscreen:    
@@ -1371,7 +1688,6 @@ IntroBloodClrPoint:
 ;----------------------------------------------------------------
 ; Init the FX	
 Init:
-
 	; Clear planes
 	lea		start_planes,a0
 	moveq.l	#$00,d0
@@ -1586,7 +1902,7 @@ IconSucessIconDataPtr:
  
     cnop 0,4 
 ;---------------------------------------------------------------    
-; Screen start at 128 in X ... $81 $2c 
+; Screen start at 128 in X ... MOUSE_CURSOR_TOP MOUSE_CURSOR_LEFT
 SpriteSetDeadIcon:
     lea DeathIconDataPtr,a1
     bsr SpriteSetIcon
@@ -1645,11 +1961,11 @@ SpriteSetNoIcon:
 ; From structure
 ; A1 = structure
 ; OffsetX from center, OffsetY from center
-; Then ptr to 4 sprites
+; Then ptr to 4 sprites Negative 
 SpriteSetIcon: 
 ; Central position.
-ICONCENTERX=($81 + (96/2) - 16 )
-ICONCENTERY=($2c + 8 + (128/2)-16)
+ICONCENTERX=(MOUSE_CURSOR_LEFT + (96/2) - 16 )
+ICONCENTERY=(MOUSE_CURSOR_TOP  + (128/2)- 16 )
 
     clr.l  d0
     move.w gOffsetPicX,d2 ; Offset in byte
@@ -1787,9 +2103,9 @@ EnableSpriteGauge:
     ; -- set position
     Lea	Gauge_sprite,a0
     ; Compute X (in d0)
-    move.w gOffsetPicX,d1
+    move.w gOffsetPicX,d1 
     lsl #3,d1
-	Move.w	#$81+96,d0	; X 
+	Move.w	#MOUSE_CURSOR_LEFT+96,d0	; X 
     add.w d1,d0 ; Add offset
 	Bclr	#0,3(a0)
 	Btst	#0,d0
@@ -1799,7 +2115,7 @@ EnableSpriteGauge:
     lsr	#1,d0
 	Move.b	d0,1(a0)
 	Clr.l	d0
-	Move.w	#$2c+8,d0 ; Y
+	Move.w	#MOUSE_CURSOR_TOP-1,d0 ; Y 
 	Move.l	d0,d1
 	Add.l	#130,d1 ; Sprite height
 	Move.b	d0,(a0)
@@ -1830,7 +2146,7 @@ DisableSpriteJauge:
     rts
     
 ;---------------------------------------------------------------
-Affiche_sprite:
+Display_Cursor_sprite:
     ;move.w Posx,$100 ; ok ... 0 to $16
     ;move.w Posy,$102 ; ok ... 0 to $1e
     Lea	Cursor_sprite,a0
@@ -1840,7 +2156,6 @@ Affiche_sprite:
     
     ; Compute X (in d0)
     move.w gOffsetPicX,d1
-    ;sub.w #1,d1 ; Need to decay of 1 TODO (this is strange)
     lsl #3,d1
 	Move.w	Spr_x,d0	; X
     add.w d1,d0 ; Add offset
@@ -1882,10 +2197,12 @@ TestMouseAndMoveSprite:
     move.b #0,mouse_want_left
     move.b #0,mouse_want_up
     move.b #0,mouse_want_down
-		
+	
+    ; Save old coordinates. m1->m1s
 	Lea	m1,a1
 	Lea	m1s,a2
 	Move.l	(a1),(a2)
+    ; Save old coordinates RELATIVES. m1->m1s
 	Lea	m1r,a1
 	Lea	m1rs,a2
 	Move.l	(a1),(a2)
@@ -1893,12 +2210,12 @@ TestMouseAndMoveSprite:
 	Clr.l	d1
 	Move.w	$dff00a,d1
 	And.w 	#$00ff,d1
-	Move.w	d1,m1		; M1 = X actuel
+	Move.w	d1,m1		; M1 = X current
 	Move.w 	$dff00a,d1
 	Lsr.w	#8,d1
 	And.w 	#$00ff,d1
-	Move.w	d1,m2		; M2 = Y actuel
-	; converi en relatif
+	Move.w	d1,m2		; M2 = Y current
+	; convert to relative
 	Lea	m1,a1
 	Move.w	(a1),d1
 	Lea	m1s,a1
@@ -1926,6 +2243,9 @@ lp3:	Cmp.w	#-Vm,m2r
 	Bpl.b	lp4
 	Move.w	m2rs,m2r	
 lp4:
+    ; Test directions
+    ;move.w m1r,$100
+    ;move.w m2r,$102
 	cmp.w	#0,m1r
 	bpl.b	b_d
 	move.w	m1r,d0
@@ -1944,50 +2264,95 @@ b_h	cmp.w	#0,m2r
 	bmi.b	b_b
 	move.w	m2r,d0
 	Add.w	d0,Mouse_b
-MOUSESENSIVITY=20
+;MOUSESENSIVITY=20
+MOUSESENSIVITY=10
 b_b
 	cmp.w	#MOUSESENSIVITY,Mouse_g
 	bmi.b	no_dg
-	clr.w	Mouse_g
-	beq.w	Gauche
+	;clr.w	Mouse_g
+	;beq.w	Gauche
+    bra Gauche
 no_dg:	
     cmp.w	#MOUSESENSIVITY,Mouse_d
 	bmi.b	no_dd
-	clr.w	Mouse_d
-	beq.w	Droite
+	;clr.w	Mouse_d
+	;beq.w	Droite
+    bra Droite
 no_dd:	
     cmp.w	#MOUSESENSIVITY,Mouse_h
 	bmi.b	no_dh
-	clr.w	Mouse_h
-	beq.b	Haut
+	;clr.w	Mouse_h
+	;beq.b	Haut
+    bra Haut
 no_dh:	
    cmp.w	#MOUSESENSIVITY,Mouse_b
 	bmi.b	no_db
-	clr.w	Mouse_b
-	beq.b	Bas
+	;clr.w	Mouse_b
+	;beq.b	Bas
+    bra Bas
 no_db:	
-    rts			; ajoute a coord les resultat algebrique trouve
+    rts
 ;---------------------------------------------------------------
 Haut:	
     move.b #1,mouse_want_up
+    ;bsr MouseApplyUp
+    sub.w #MOUSESENSIVITY+1,Mouse_h ; N Set if the result is negative. Cleared otherwise.
+    ; until this is positive then go left
+    bmi .end ; Test flag N is true.
+    ;bra .end
+    
+    bra Haut
+.end  
+    clr.w	Mouse_h  
     rts
 
 Bas:
     move.b #1,mouse_want_down
+    ;bsr MouseApplyDown
+    sub.w #MOUSESENSIVITY+1,Mouse_b ; N Set if the result is negative. Cleared otherwise.
+    ; until this is positive then go left
+    bmi .end ; Test flag N is true.
+    ;bra .end
+    
+    bra Bas
+.end  
+    clr.w	Mouse_b      
     Rts
 
 Gauche:	
     move.b #1,mouse_want_left
+    ;bsr MouseApplyLeft
+    sub.w #MOUSESENSIVITY+1,Mouse_g ; N Set if the result is negative. Cleared otherwise.
+    ; until this is positive then go left
+    bmi .end ; Test flag N is true.
+    ;bra .end
+    
+    bra Gauche
+.end      
+    clr.w	Mouse_g  
     bra no_dd ; continue testing h/d
 
 Droite:	
     move.b #1,mouse_want_right
+    ;bsr MouseApplyRight
+    
+    sub.w #MOUSESENSIVITY+1,Mouse_d ; N Set if the result is negative. Cleared otherwise.
+    ; until this is positive then go left
+    bmi .end ; Test flag N is true.
+    ;bra .end
+     
+    bra Droite
+.end        
+    clr.w	Mouse_d 
     bra no_dd ; continue testing h/d
 
 ;-------------------------------------------------------------
 
+MOUSE_CURSOR_TOP=$2c+1+8
+MOUSE_CURSOR_LEFT=$80
+
 MouseApplyUp:	
-    Cmp.w	#$2c+1+8,Spr_y	; Ligne du haut ?
+    Cmp.w	#MOUSE_CURSOR_TOP,Spr_y	; Ligne du haut ?
 	Beq.b	.no_h1
 	Sub.w	#4,Spr_y	
 	Sub.w	#1,Posy
@@ -1995,7 +2360,7 @@ MouseApplyUp:
     rts
 
 MouseApplyDown:
-	Cmp.w	#$2c+1+8+(15*8),Spr_y	; comparé avec le bas
+	Cmp.w	#MOUSE_CURSOR_TOP+(15*8),Spr_y	; comparé avec le bas
 	beq	.no_h2
 	Add.w	#4,Spr_y
 	Add.w	#1,Posy
@@ -2003,7 +2368,7 @@ MouseApplyDown:
     Rts
 
 MouseApplyLeft:	
-    Cmp.w	#$81,Spr_x
+    Cmp.w	#MOUSE_CURSOR_LEFT,Spr_x
 	Beq.b	.no_h2
 	Sub.w	#4,Spr_x
 	Sub.w	#1,Posx
@@ -2011,7 +2376,7 @@ MouseApplyLeft:
    Rts
 
 MouseApplyRight:	
-    Cmp.w	#$81+(11*8),Spr_x
+    Cmp.w	#MOUSE_CURSOR_LEFT+(11*8),Spr_x
 	Beq.b	.no_h2
 	Add.w	#4,Spr_x
 	Add.w	#1,Posx
@@ -2024,16 +2389,14 @@ VideoIrq:
 
 	add.w	#1,wait
     
-    bsr TestMouseAndMoveSprite
-    bsr Affiche_sprite
-
-.noscroll
+    bsr TestMouseAndMoveSprite ; Mouse is always moving, so we can not control position of cursor out of play mode
+    bsr Display_Cursor_sprite
 
 	rts
-    
-    if DISPLAYDEBUGMEMORY==1
+
 ;---------------------------------------------------------------
-; Convert mem block label to color (to be able to track them)    
+; Convert mem block label to color (to be able to track them)  
+    if DISPLAYDEBUGMEMORY==1  
 fillDebugMem:
 
 sizedebugmemplan=12*40
@@ -2190,7 +2553,7 @@ waitblitter:
 ;---------------------------------------------------------------	
 ;---------------------------------------------------------------	
 ;---------------------------------------------------------------	    
-    
+
 ; Variables
     cnop 0,4
     
@@ -2202,8 +2565,8 @@ IntroData:     dc.l 0
 
 IntroSpr_x:		dc.w	$90 ; min X
 IntroSpr_y:		dc.w	$60 ; min Y
-Spr_x:		Dc.w	$81
-Spr_y:		Dc.w	$2c+1+8      ; Top screen
+Spr_x:		Dc.w	MOUSE_CURSOR_LEFT
+Spr_y:		Dc.w	MOUSE_CURSOR_TOP      ; Top screen
 Posx:		Dc.w	0		; position in grid 4x4 
 Posy:		Dc.w	0
 Mouse_h:	dc.w	0
@@ -2229,8 +2592,28 @@ oldvertcnt:        ds.b    1
 gTextScrollAnimationCounter: dc.b 50 ;// u8 gTextScrollAnimationCounter=255; // 0 to 49 = active, >49 = inactive
 gTextScrollWaitTime: dc.b 0 ; >0 means wait
 gCreditLooping: dc.b 0
+pointedzone: dc.b 0 ;	u8 pointedzone=0; // 0 means none
+shouldloopingame: dc.b 0;	u8 shouldloopingame=1; // Main loop. False to allow level change.
+; All input states (computed only once)
+firepressed: dc.b 0;	u8 firepressed;
+firepressedlast: dc.b 0;	u8 firepressedlast=0; // To be able to check triggering "just pressed"
+iskeyup: dc.b 0;
+iskeydown: dc.b 0;
+iskeyleft: dc.b 0;
+iskeyright: dc.b 0;
+iskeyuplast: dc.b 0;
+iskeydownlast: dc.b 0;
+iskeyleftlast: dc.b 0;
+iskeyrightlast: dc.b 0;
+keyboarddata: dc.b 0 ; value of current key pressed. 0 if no key pressed
+; Locals
+win: dc.b 0; QTE 
+lost: dc.b 0; QTE
+keypressed: dc.b 0 ; QTE
+wantedaction: dc.b 0 ; QTE
+actiontodo: dc.b 0
+message: dc.b 0 ;QTE
     even
-
     
 ;// -- Globals ---------------------------------------------
 ;
@@ -2281,6 +2664,7 @@ QTEstate: dc.b 0 ;u8  QTEstate; // For managing the QTE sequence.
 QTEcurrentstep: dc.b 0 ;u8  QTEcurrentstep; // Step of the rythmic sequence.
 gGaugeEnded: dc.b 0 ;u8  gGaugeEnded; // Switch to 1 when time is over.
 gGaugeInUse: dc.b 0 ;u8  gGaugeInUse; // 0=not used, 1=used
+gGaugeReadyToStart: dc.b 0 ; u8 Fix, pause before gauge start (wait for mouse move)
 gPaletteMode: dc.b 0 ;u8  gPaletteMode; // 0=normal 1=blink 2=smoke 3=smoke&blood 4=anim palette fall
 gPaletteNextSwap: dc.b 0 ;u8  gPaletteNextSwap; // >0 in frame
 gNextPalette: dc.b 0 ;u8  gNextPalette; // 0=Palette 1=PaletteAlt
@@ -2288,6 +2672,7 @@ gCursorMode: dc.b 0 ;u8  gCursorMode; // Special mode for cursor. 0=normal. 1=Sl
 gCursorAnimCount: dc.b 0 ; local for simply slowing down cursor auto anim
 gQTEForceNoWait: dc.b 0;u8  gQTEForceNoWait; // False. For level 92 force no wait
 gCheatEnable: dc.b 0;u8  gCheatEnable;
+gCheatEnableTimer: dc.b 0
 gSkippingLevel: dc.b 0;u8  gSkippingLevel; // For level skip
 gCheatSequenceCorrectLetters: dc.b 0 ;u8  gCheatSequenceCorrectLetters; 
 gTime: dc.b 0 ;u8  gTime; // Seconds
@@ -2302,7 +2687,7 @@ gPicAltCurrentIndex: dc.b 0 ;u8  gPicAltCurrentIndex; // For animation, store cu
 gSoundGoodHaveBeenPlayedThisFrame: dc.b 0 ;u8  gSoundGoodHaveBeenPlayedThisFrame; // To avoid playing twice
 NBMAXZONES=9 ;#define NBMAXZONES 9
 zones: ds.b NBMAXZONES*5 ;u8 zones[NBMAXZONES*5]; // start with no values
-CurrentLangage: dc.b    1 ; 0=french 1=english ; 0 to 6
+CurrentLangage: dc.b    LANGAGEDEFAULT ; 0=french 1=english ; 0 to 6
 ; Current START LEVEL
 CurrentLevelName: dc.b    STARTLEVELNAME1,STARTLEVELNAME2; This is name of level LEVEL01.BIN will only be "01".
  
@@ -2622,39 +3007,13 @@ DisplayPic: ;void DisplayPic()
     ;move.b #0,gIconLastDisplayedId ;	gIconLastDisplayedId=0; // No icons displayed at start
     rts
 
-;// -------------------------------------------------------   
-; Display Success Icon
-; 32x32 in HAM6 iff ... on 96 width
-;DisplaySucessIcon:
-;    clr.l d0
-;    move.w gOffsetPicX,d0 ; gOffsetPicX (w) 1 14 27
-;    move.l #SucessIcon_Level0,a0 ; iff
-;    move.l #8+48,d1 ; Y
-;    add.l #$74,a0; skip header ; no header in this version
-;    lea HAMPLANS,a1 ; Dst
-;    add.l #4,a1 ; Center X
-;    mulu #40*6,d1
-;    add.l d0,a1
-;    add.l d1,a1
-;    move.w #(32*6)-1,d3
-;.copy
-;    ; Copy data
-;    move.b (a0)+,(a1)+
-;    move.b (a0)+,(a1)+
-;    move.b (a0)+,(a1)+
-;    move.b (a0)+,(a1)+
-;    add.l #40-4,a1
-;    dbra d3,.copy
-;    rts
-
 ;// -------------------------------------------------------
 ;// DisplayPicAlt
-;// altindex = 1 2 3 4 5 6
+;// altindex = 0 1 2 3 4 5 6
 ;// Will only change the colors, not the bitmap
 ;// -------------------------------------------------------
 DisplayPicAlt: ;void DisplayPicAlt(int altindex d0.w)
     ; Check if pic already displayed
-    
     cmp.b gPicAltCurrentIndex,d0
     beq .end
     move.b d0,gPicAltCurrentIndex ; save for next time
@@ -2674,7 +3033,7 @@ DisplayPicAlt: ;void DisplayPicAlt(int altindex d0.w)
     rts
     
 ;// -------------------------------------------------------
-;// DisplayPicAlt
+;// DisplayPicAltFall
 ;// altindex = 0 1 2 3 
 ;// Will only change the colors, not the bitmap
 ;// -------------------------------------------------------
@@ -2694,6 +3053,57 @@ DisplayPicAltFall:
     rts 
 
 
+;// -------------------------------------------------------
+;// DisplayPicAltHeight4
+; Call only for Alt 1 (not 0 !!) ;// altindex = (0) 1
+; Only for level 11
+; Picture start at line 12 (and height is 4 lines)
+;// -------------------------------------------------------
+DisplayPicAltHeight4: ;void DisplayPicAlt(int altindex d0.w)
+    ; Check if pic already displayed
+    cmp.b gPicAltCurrentIndex,d0
+    beq .end
+    move.b d0,gPicAltCurrentIndex ; save for next time
+    clr.l d2
+    move.w d0,d2
+    mulu #9216,d2 ; 12*6*128, skip default picture
+    clr.l d0
+    move.w gOffsetPicX,d0 ; gOffsetPicX (w) 1 14 27
+    move.l gTilesData,a0 ; TilesDatas=Level Picture (not background tile). Start of graphic data. One long, then palette (16)
+    add.l #4+(16*2),a0 ; first picture (no header)
+    add.l d2,a0 ; go to alt picture
+    move.l #8,d1 ; Y
+    bsr DisplayOnePictureHeight4 
+.end:    
+    rts
+    
+;// -------------------------------------------------------
+;// DisplayPicAltHeight18
+; Call only for Alt 1 and 2 (not 0 !!) ;// altindex = (0) 1 2
+; Only for level 51
+; Start line 47 (Height 19 lines)
+;// -------------------------------------------------------
+DisplayPicAltHeight18: ;void DisplayPicAlt(int altindex d0.w)
+    ; Check if pic already displayed
+    cmp.b gPicAltCurrentIndex,d0
+    beq .end
+    move.b d0,gPicAltCurrentIndex ; save for next time
+    clr.l d2
+    move.w d0,d2
+    sub.w #1,d2 ; reduce 1 2 to 0 1
+    mulu #19*12*6,d2
+    clr.l d0
+    move.w gOffsetPicX,d0 ; gOffsetPicX (w) 1 14 27
+    move.l gTilesData,a0 ; TilesDatas=Level Picture (not background tile). Start of graphic data. One long, then palette (16)
+    add.l #4+(16*2),a0 ; first picture (no header)
+    add.l #9216,a0 ; Skip default picture
+    add.l d2,a0 ; go to alt picture
+    move.l #8,d1 ; Y
+    bsr DisplayOnePictureHeight18 
+.end:    
+    rts    
+    
+
 ; --------------------------------------------
 ; a0 picture
 ; d0 x column
@@ -2709,8 +3119,6 @@ DisplayOnePictureFall:
     
     ;move.w #$f00,$dff180
     ;move.b d2,$100
-
-
     ; Blitter version.
     
     ; This required aligned of data of Source (data loaded) and destination.
@@ -2822,7 +3230,221 @@ FALL4=36
     movem.l	(sp)+,a0-a3/d0-d3 
     rts 
     
+; --------------------------------------------
+; Only for level 11
+; a0 picture
+; d0 x column
+; d1 y line
+; Picture start at line 12 (and height is 4 lines)
+DisplayOnePictureHeight4: ; 96*4 = 6 words
+	movem.l	d0-d3,-(sp)
+    ;add.l #$74,a0; skip header ; no header in this version
+    lea HAMPLANS,a1 ; Dst
+    add.w #12,d1 ; Start at line 12 of picture
+    mulu #40*6,d1
+    add.l d0,a1
+    add.l d1,a1
+    
+    ; Blitter version.
+    move.l a1,d0
+    btst #0,d0 ; test if 0
+    bne .odddest
+    
+    ; This required aligned of data of Source (data loaded) and destination.
+    ; For image 1 and 3 destination is on ODD adress, so we can not blit in one time.
+    ; We blit center, and then borders are copied with CPU at the same time.
+    
+    ; Even version
+    ; Source and dest adress are even.
+    move.w #$0000,d2
+    OR.W	#%0000100111110000,D2 ; 09f0
+    ;         ssss1234mmmmmmmm  
+    bsr waitblitter
+	MOVE.W	D2,$DFF040 ; 4 Shift Source A + 4 Dma Activation + 8 mintern    
+	MOVE.W	#0,$DFF064	; MOD A Source
+	MOVE.W	#(40-12),$DFF066	; MOD D Dest
+    MOVE.L	#$FFFFFFFF,$DFF044 ; First word mask and last word
+	MOVE.L	a0,$DFF050  ; SOURCE A
+    move.l  a1,$DFF054	; dest D (screen)
+	Move.w	#0,$dff042			; Decay source B + flag line trace
 
+	move.w #((4*6)<<6)+6,$dff058 ; BltSize, height*64 , width (WORDS!!) launch transfert
+    bra .end
+
+    ; -- Odd adress version. blitter for main part
+    ; The rest in CPU (for 1 and last column)
+.odddest:  
+    add.l   #1,a0 ; source aligned on even adress.
+    add.l   #1,a1 ; dest aligned on even adress.
+    move.w #$0000,d2 ; Decay A of 8 to the right
+    OR.W	#%0000100111110000,D2 ; 09f0
+    ;         ssss1234mmmmmmmm  
+    bsr waitblitter
+	MOVE.W	D2,$DFF040 ; 4 Shift Source A + 4 Dma Activation + 8 mintern    
+	MOVE.W	#2,$DFF064	; MOD A Source
+	MOVE.W	#(40-10),$DFF066	; MOD D Dest
+    MOVE.L	#$FFFFFFFF,$DFF044 ; First word mask and last word
+	MOVE.L	a0,$DFF050  ; SOURCE A
+    move.l  a1,$DFF054	; dest D (screen)
+	Move.w	#0,$dff042			; Decay source B + flag line trace
+	move.w #((4*6)<<6)+5,$dff058 ; BltSize, height*64 , width (WORDS!!) launch transfert
+    
+    ; -- CPU part (1 and last byte)
+    sub.l #1,a0
+    sub.l #1,a1
+    move.w #(4)-1,d3
+.copy
+    ;  Copy data. 12 bytes width, we only copy first and last one
+    ; Plane 1
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 2
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 3
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 4
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 5
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 6
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1    
+    dbra d3,.copy    
+    bra .end
+.end:   
+    movem.l	(sp)+,d0-d3 
+    rts 
+
+; --------------------------------------------
+; Only for level 51
+; a0 picture
+; d0 x column
+; d1 y line
+; Start line 47 (Height 19 lines)
+DisplayOnePictureHeight18: ; 96*18 = 6 words
+	movem.l	d0-d3,-(sp)
+    ;add.l #$74,a0; skip header ; no header in this version
+    lea HAMPLANS,a1 ; Dst
+    add.w #47,d1 ; Start line 54
+    mulu #40*6,d1
+    add.l d0,a1
+    add.l d1,a1
+    
+    ; Blitter version.
+    move.l a1,d0
+    btst #0,d0 ; test if 0
+    bne .odddest
+    
+    ; This required aligned of data of Source (data loaded) and destination.
+    ; For image 1 and 3 destination is on ODD adress, so we can not blit in one time.
+    ; We blit center, and then borders are copied with CPU at the same time.
+    
+    ; Even version
+    ; Source and dest adress are even.
+    move.w #$0000,d2
+    OR.W	#%0000100111110000,D2 ; 09f0
+    ;         ssss1234mmmmmmmm  
+    bsr waitblitter
+	MOVE.W	D2,$DFF040 ; 4 Shift Source A + 4 Dma Activation + 8 mintern    
+	MOVE.W	#0,$DFF064	; MOD A Source
+	MOVE.W	#(40-12),$DFF066	; MOD D Dest
+    MOVE.L	#$FFFFFFFF,$DFF044 ; First word mask and last word
+	MOVE.L	a0,$DFF050  ; SOURCE A
+    move.l  a1,$DFF054	; dest D (screen)
+	Move.w	#0,$dff042			; Decay source B + flag line trace
+
+	move.w #((19*6)<<6)+6,$dff058 ; BltSize, height*64 , width (WORDS!!) launch transfert
+    bra .end
+
+    ; -- Odd adress version. blitter for main part
+    ; The rest in CPU (for 1 and last column)
+.odddest:  
+    add.l   #1,a0 ; source aligned on even adress.
+    add.l   #1,a1 ; dest aligned on even adress.
+    move.w #$0000,d2 ; Decay A of 8 to the right
+    OR.W	#%0000100111110000,D2 ; 09f0
+    ;         ssss1234mmmmmmmm  
+    bsr waitblitter
+	MOVE.W	D2,$DFF040 ; 4 Shift Source A + 4 Dma Activation + 8 mintern    
+	MOVE.W	#2,$DFF064	; MOD A Source
+	MOVE.W	#(40-10),$DFF066	; MOD D Dest
+    MOVE.L	#$FFFFFFFF,$DFF044 ; First word mask and last word
+	MOVE.L	a0,$DFF050  ; SOURCE A
+    move.l  a1,$DFF054	; dest D (screen)
+	Move.w	#0,$dff042			; Decay source B + flag line trace
+	move.w #((19*6)<<6)+5,$dff058 ; BltSize, height*64 , width (WORDS!!) launch transfert
+    
+    ; -- CPU part (1 and last byte)
+    sub.l #1,a0
+    sub.l #1,a1
+    move.w #(19)-1,d3
+.copy
+    ;  Copy data. 12 bytes width, we only copy first and last one
+    ; Plane 1
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 2
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 3
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 4
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 5
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1
+    ; Plane 6
+    move.b (a0),(a1)
+    add.l #11,a0
+    add.l #11,a1
+    move.b (a0)+,(a1)    
+    add.l #40-11,a1    
+    dbra d3,.copy    
+    bra .end
+.end:   
+    movem.l	(sp)+,d0-d3 
+    rts 
+
+    
 ; ----------------------------------------------------------
 ; u8 drawStringwithSize(u8* ptext, u8 x, u8 y, u8 totalsize)
 ; a0 text
@@ -3260,7 +3882,7 @@ InitNextAction: ;void InitNextAction()
 		cmp.b #253,d0 ; else if ( nextaction == 253 ) // Change Palette mode 0 1 2 3 4 5 6 7
         bne .no253
         move.b 1(a0),gPaletteMode ; gPaletteMode=gCurrentScenarioLine[1]; // 0=normal 1=blink 2=smoke 3=smoke&blood 
-            ; //4=anim palette fall 5=river 6=diablo 7=fire
+            ; //4=anim palette fall 5=river 6=diablo 7=fire 8=bomb 9=Camera blink
             move.b #10,gPaletteNextSwap ; gPaletteNextSwap=10; // >0 in frame
             move.b #1,gNextPalette ; gNextPalette=1; // 0=Palette 1=PaletteAlt		
             add.l #10,gCurrentScenarioLine; gCurrentScenarioLine+=10;
@@ -3418,8 +4040,10 @@ InitGauge:
     ; TODO : Fill gauge
     ;move.w #$3c,d0 ;  EraseAndStopGauge(0x3C); // graphic init (colors) and fill full gauge
     ;bsr EraseAndStopGauge ;
-    bsr EnableSpriteGauge    
-    move.b #1,gGaugeInUse ; gGaugeInUse=1;	
+    bsr EnableSpriteGauge 
+    bsr UpdateAndDisplayGauge ; Update once
+    ;move.b #1,gGaugeInUse ; gGaugeInUse=1;	
+    move.b #1,gGaugeReadyToStart ; Ask Gauge to start, as soon as mouse move
     ;move.b #$fe,$101
 .exit	
     movem.l (sp)+,d0/a0
@@ -3438,7 +4062,7 @@ UpdateAndDisplayGauge: ;void DisplayGauge()
     ; -- Manage Gauge
     cmp.b #1,gGaugeEnded ;	if (gGaugeEnded==1)
     beq .UpdateAndDisplayGauge_end ; return;
-     move.w gGaugeSpeed,d0 ; example $0036
+    move.w gGaugeSpeed,d0 ; example $0036
     cmp.w gGauge,d0 ; if (gGauge>=gGaugeSpeed) ... gGauge start at $8000
     bgt .gaugeend
     sub.w d0,gGauge ; gGauge -= gGaugeSpeed;
@@ -3449,11 +4073,26 @@ UpdateAndDisplayGauge: ;void DisplayGauge()
 	
     ; -- Display gauge
     ; Display black during 128-switchpoint
-    ; And display gauge during switchpoint
+    ; And display gauge during switchpoint-0
     move.w gGauge,d0 
     lsr #8,d0 ; switchpoint=(gGauge>>8); // Switch point is 128 to 0 
     move.w #128,d1
-    sub.w   d0,d1 ; 128 - switchpoint
+    sub.w   d0,d1 ; 128 - switchpoint .... Switch is 0 to 128. (0 top, 128 is bottom.
+    
+    ; Update sprite color ... d1 = 0 , yellow (ff0) .... d1 > 64 = Orange (FA0), D1 > 96 Red (f00).
+    ; JaugeColor+2
+    lea JaugeColor+2,a0
+    move.w #$ff0,(a0) ; Yellow
+    cmp.w #96,d1
+    bmi .notred
+    move.w #$f00,(a0) ; Red
+    bra .endcolormanagment  
+.notred
+    cmp.w #64,d1
+    bmi .endcolormanagment  
+    move.w #$fA0,(a0) ; Orange
+.endcolormanagment    
+    
     lea Gauge_sprite,a0
     add.l #4+4+2,a0 ; jump header and first line and point to second word
     ; Display black
@@ -3520,11 +4159,16 @@ PlaySoundGood: ;void PlaySoundGood()
 .end:
     rts
 ;// -------------------------------------------------------	
-
 PlaySoundBad: ;void PlaySoundBad()
     lea $dff000,a6
     lea SfxBad_Desc,a0
     jsr _mt_playfx ; channelStatus(d0) = _mt_playfx(a6=CUSTOM, a0=SfxStructurePointer)
+    rts
+;// -------------------------------------------------------	
+PlaySoundClick: 
+    lea $dff000,a6
+    lea SfxClick_Desc,a0
+    jsr _mt_playfx
     rts
 ;// -------------------------------------------------------	
 PlaySoundWarning: ;void PlaySoundWarning()
@@ -3554,46 +4198,67 @@ PlayRandomSound: ;void PlayRandomSound()
     move.b d0,gSfxLastRand
 
     lea $dff000,a6
-    ;move.w d0,$102
+    ;move.b d0,$101
     cmp.w #0,d0
-    beq PlayRandomSound_Plaushout1
+    beq PlayRandomSound_Playshout1
     cmp.w #1,d0
-    beq PlayRandomSound_Plaushout2    
+    beq PlayRandomSound_Playshout2    
     cmp.w #2,d0
-    beq PlayRandomSound_Plaushout3
+    beq PlayRandomSound_Playshout3
     cmp.w #3,d0
-    beq PlayRandomSound_Plaushout4
+    beq PlayRandomSound_Playshout4
     cmp.w #4,d0
-    beq PlayRandomSound_Plaushout5
+    beq PlayRandomSound_Playshout5
     rts
 ;// -------------------------------------------------------    
-PlayRandomSound_Plaushout1:    
+PlayRandomSound_Playshout1:    
     lea SfxShout1_Desc,a0
+    bsr GetRandom ; d0.w
+    and.w #$003f,d0 ; Keep 0-63 values
+    add.w #275,d0
+    move.w d0,6(a0) ; a0 + 6 = word with pitch. 275 + random 64
     jsr _mt_playfx
     rts
-PlayRandomSound_Plaushout2:    
+PlayRandomSound_Playshout2:    
     lea SfxShout2_Desc,a0
+    bsr GetRandom ; d0.w
+    and.w #$003f,d0 ; Keep 0-63 values
+    add.w #275,d0
+    move.w d0,6(a0) ; a0 + 6 = word with pitch. 275 + random 64    
     jsr _mt_playfx
     rts
-PlayRandomSound_Plaushout3:    
+PlayRandomSound_Playshout3:    
     lea SfxShout3_Desc,a0
+    bsr GetRandom ; d0.w
+    and.w #$003f,d0 ; Keep 0-63 values
+    add.w #275,d0
+    move.w d0,6(a0) ; a0 + 6 = word with pitch. 275 + random 64    
     jsr _mt_playfx
     rts
-PlayRandomSound_Plaushout4:    
+PlayRandomSound_Playshout4:    
     lea SfxShout4_Desc,a0
+    bsr GetRandom ; d0.w
+    and.w #$003f,d0 ; Keep 0-63 values
+    add.w #275,d0
+    move.w d0,6(a0) ; a0 + 6 = word with pitch. 275 + random 64    
     jsr _mt_playfx
     rts
-PlayRandomSound_Plaushout5:    
+PlayRandomSound_Playshout5:    
     lea SfxShout5_Desc,a0
+    bsr GetRandom ; d0.w
+    and.w #$003f,d0 ; Keep 0-63 values
+    add.w #275,d0
+    move.w d0,6(a0) ; a0 + 6 = word with pitch. 275 + random 64    
     jsr _mt_playfx
-    rts    
+    rts 
+    
 ;PlaySoundTest:
 ;    bsr PlaySoundGood
 ;    rts
     
 SfxGood_Desc:
     dc.l sound_good_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-    dc.w 5654/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w (sound_good_raw_end-sound_good_raw)/2    ;     WORD  sfx_len  (sample length in words)
     dc.w 150    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
@@ -3601,23 +4266,23 @@ SfxGood_Desc:
 
 SfxBad_Desc:
     dc.l sound_bad_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-    dc.w 7835/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w (sound_bad_raw_end-sound_bad_raw)/2    ;     WORD  sfx_len  (sample length in words)
     dc.w 600    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)   
 
-;SfxWarning_Desc:
-;    dc.l sound_warning_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-;    dc.w 3036/2    ;     WORD  sfx_len  (sample length in words)
-;    dc.w 600    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
-;    dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
-;    dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
-;    dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)      
+SfxClick_Desc:
+    dc.l sound_click_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
+    dc.w (sound_click_raw_end-sound_click_raw)/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w 150    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
+    dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
+    dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)
 
 SfxWarning_Desc:
     dc.l sound_warning_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-    dc.w 8286/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w (sound_warning_raw_end-sound_warning_raw)/2    ;     WORD  sfx_len  (sample length in words)
     dc.w 600    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
@@ -3625,7 +4290,7 @@ SfxWarning_Desc:
   
 SfxIntroResistance_Desc:
     dc.l 0    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-    dc.w 12272/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w 11172/2    ;     WORD  sfx_len  (sample length in words)
     dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
@@ -3633,7 +4298,7 @@ SfxIntroResistance_Desc:
 
 SfxIntroNinjaCarnage_Desc:
     dc.l 0    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
-    dc.w 30276/2    ;     WORD  sfx_len  (sample length in words)
+    dc.w 29331/2    ;     WORD  sfx_len  (sample length in words)
     dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
@@ -3644,7 +4309,7 @@ SfxIntroNinjaCarnage_Desc:
 SfxShout1_Desc:
     dc.l sound_shout1_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
     dc.w (sound_shout1_raw_end-sound_shout1_raw)/2    ;     WORD  sfx_len  (sample length in words)
-    dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 250    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)     
@@ -3652,7 +4317,7 @@ SfxShout1_Desc:
 SfxShout2_Desc:
     dc.l sound_shout2_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
     dc.w (sound_shout2_raw_end-sound_shout2_raw)/2    ;     WORD  sfx_len  (sample length in words)
-    dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 250    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)  
@@ -3660,7 +4325,7 @@ SfxShout2_Desc:
 SfxShout3_Desc:
     dc.l sound_shout3_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
     dc.w (sound_shout3_raw_end-sound_shout3_raw)/2    ;     WORD  sfx_len  (sample length in words)
-    dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 250    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)      
@@ -3668,7 +4333,7 @@ SfxShout3_Desc:
 SfxShout4_Desc:
     dc.l sound_shout4_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
     dc.w (sound_shout4_raw_end-sound_shout4_raw)/2    ;     WORD  sfx_len  (sample length in words)
-    dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 250    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)  
@@ -3676,12 +4341,10 @@ SfxShout4_Desc:
 SfxShout5_Desc:
     dc.l sound_shout5_raw    ;     void *sfx_ptr  (pointer to sample start in Chip RAM, even address)
     dc.w (sound_shout5_raw_end-sound_shout5_raw)/2    ;     WORD  sfx_len  (sample length in words)
-    dc.w 350    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
+    dc.w 250    ;     WORD  sfx_per  (hardware replay period for sample)(lower value is higher pitch)
     dc.w 64    ;     WORD  sfx_vol  (volume 0..64, is unaffected by the song's master volume)
     dc.b 3    ;     BYTE  sfx_cha  (0..3 selected replay channel, -1 selects best channel)
     dc.b 127    ;     BYTE  sfx_pri  (priority, must be in the range 1..127)  
-
-
 
 ;// -------------------------------------------------------
 ;// UpdatePaletteMode
@@ -3747,14 +4410,9 @@ UpdatePaletteMode: ;void UpdatePaletteMode()
             bsr DisplayPicAltFall ; DisplayPicAlt(3); // cpct_setPalette(paletteFall4, 16); 
 .no4	
 
-
-    ; -- Palette mode 5 & 8
-    cmp.b #5,gPaletteMode ;	else if (gPaletteMode==5 || gPaletteMode==8 ) // River, bomb numbers
-    beq .ok5
-    cmp.b #8,gPaletteMode
-    beq .ok5 
-    bra .no5
-.ok5:    
+    ; -- Palette mode 5 
+    cmp.b #5,gPaletteMode ;	else if (gPaletteMode==5) // river
+    bne .no5    
         sub.b #1,gPaletteNextSwap; gPaletteNextSwap--;
         cmp.b #0,gPaletteNextSwap ; if (gPaletteNextSwap==0)
         bne .nopalswap2
@@ -3833,7 +4491,65 @@ UpdatePaletteMode: ;void UpdatePaletteMode()
         bne .no7
             move.w #2,d0
             bsr DisplayPicAlt ; DisplayPicAlt(2); //cpct_setPalette(paletteFire3, 16);
-.no7
+.no7:
+
+
+    ; -- Palette mode 8  (Bomb Figures cycling). , bomb numbers
+    ; Full picture, Variation 1 (19 lines) Variation 2 (19 lines)
+    cmp.b #8,gPaletteMode ;	else if (gPaletteMode==7) // Fire
+    bne .no8    
+        sub.b #1,gPaletteNextSwap; gPaletteNextSwap--;
+        cmp.b #0,gPaletteNextSwap ; if (gPaletteNextSwap==0)
+        bne .nopalswap8
+            move.b #7,gPaletteNextSwap ; gPaletteNextSwap=7;
+            add.b #1,gNextPalette ; gNextPalette++;
+            cmp.b #3,gNextPalette; gNextPalette = gNextPalette % 3;
+            bne .nopalswap8
+            move.b #0,gNextPalette
+.nopalswap8:	
+        cmp.b #0,gNextPalette ; if (gNextPalette==0)
+        bne .no1f
+            move.w #0,d0
+            bsr DisplayPicAlt ; DisplayPicAlt(0); 
+            bra .no8
+.no1f
+        cmp.b #1,gNextPalette ; else if (gNextPalette==1)
+        bne .no2f
+            move.w #1,d0
+            bsr DisplayPicAltHeight18 ; DisplayPicAlt(1);
+            bra .no8
+.no2f
+        cmp.b #2,gNextPalette ; else if (gNextPalette==2)
+        bne .no8
+            move.w #2,d0
+            bsr DisplayPicAltHeight18 ; DisplayPicAlt(2);
+.no8: 
+
+
+    ; Level 11 point cycling.
+    ; Palette mode 9
+    ; Special case as starting from intro and stop at first good action.
+    cmp.b #9,gPaletteMode ;	else if (gPaletteMode==9) // Blinking point
+    bne .no9
+        sub.b #1,gPaletteNextSwap ; gPaletteNextSwap--;
+        cmp.b #0,gPaletteNextSwap  ; if (gPaletteNextSwap==0)
+        bne .nopalswap9
+        move.b #20,gPaletteNextSwap ; gPaletteNextSwap= 20 + (rand()%32);
+        bsr GetRandom
+        and.b #32-1,d0
+        add.b d0,gPaletteNextSwap
+        add.b #1,gNextPalette ; gNextPalette = !gNextPalette;
+        and.b #$1,gNextPalette
+.nopalswap9:
+        cmp.b #1,gNextPalette ; if (gNextPalette==1)
+        bne .no1g
+            move.w #1,d0
+            bsr DisplayPicAltHeight4 ; DisplayPicAlt(1); // Camera point, 4 lines
+            bra .no9
+.no1g
+            move.w #0,d0
+            bsr DisplayPicAlt ; DisplayPicAlt(0); // cpct_setPalette(palette, 16); 
+.no9
 
     rts
     
@@ -3842,41 +4558,6 @@ UpdatePaletteMode: ;void UpdatePaletteMode()
 ;// MAIN LOOP
 ;//
 ;// -------------------------------------------------------
-;int MainLoop(void)
-;{
-;	// Local vars 
-;	u8 x, y;   // Sprite coordinates
-;	u8 i,j;
-pointedzone: dc.b 0 ;	u8 pointedzone=0; // 0 means none
-;leftpressed: dc.b 0;	u8 leftpressed;
-;rightpressed: dc.b 0;	u8 rightpressed;
-;uppressed: dc.b 0;	u8 uppressed;
-;downpressed: dc.b 0;	u8 downpressed;	
-;leftpressedlast: dc.b 0;	u8 leftpressedlast=0; // To be able to check triggering "just pressed"
-;rightpressedlast: dc.b 0;	u8 rightpressedlast=0; // To be able to check triggering "just pressed"
-;uppressedlast: dc.b 0;	u8 uppressedlast=0; // To be able to check triggering "just pressed"
-;downpressedlast: dc.b 0;	u8 downpressedlast=0; // To be able to check triggering "just pressed"	
-shouldloopingame: dc.b 0;	u8 shouldloopingame=1; // Main loop. False to allow level change.
-; All input states (computed only once)
-firepressed: dc.b 0;	u8 firepressed;
-firepressedlast: dc.b 0;	u8 firepressedlast=0; // To be able to check triggering "just pressed"
-iskeyup: dc.b 0;
-iskeydown: dc.b 0;
-iskeyleft: dc.b 0;
-iskeyright: dc.b 0;
-iskeyuplast: dc.b 0;
-iskeydownlast: dc.b 0;
-iskeyleftlast: dc.b 0;
-iskeyrightlast: dc.b 0;
-keyboarddata: dc.b 0 ; value of current key pressed. 0 if no key pressed
-; Locals
-win: dc.b 0; QTE 
-lost: dc.b 0; QTE
-keypressed: dc.b 0 ; QTE
-wantedaction: dc.b 0 ; QTE
-actiontodo: dc.b 0
-message: dc.b 0 ;QTE
-    even
 
 ; d0 new value, d1 old value, a0 byte dest, d2 value to set
 ; return d0 to say if value have been set or not
@@ -3910,12 +4591,10 @@ InitGame:
     move.b #0,gTimePrecise ; gTimePrecise=0; // Frame precise (0 to 255) 
     move.b #0,gQTEForceNoWait ; gQTEForceNoWait=0; // For level 92
     move.b #0,gSkippingLevel ; gSkippingLevel=0;
-    ; TODO
-;#ifndef ALLOWSKIPLEVEL	
-;	gCheatEnable=0; // Allow user to skip level
-;#else
-    move.b #1,gCheatEnable; gCheatEnable=1; // Force cheat code to be enable at start
-;#endif
+    move.b #0,gCheatEnable; gCheatEnable=1; // Force cheat code to be enable at start
+    if ALLOWSKIPLEVEL==1
+    move.b #1,gCheatEnable ; // Allow user to skip level with key N
+    endc
 
     move.b #0,firepressed
     move.b #0,iskeyup
@@ -3924,6 +4603,8 @@ InitGame:
     move.b #0,iskeyright
     
     move.b #0,gCreditLooping ; To avoid relaunching music at end.
+    
+    move.b #0,gCheatSequenceCorrectLetters
 
     rts
 
@@ -4176,7 +4857,13 @@ InitLevel:
         ; // -- Intro text
         move.l gMessageIntro,a0
         bsr displayline2 ; displayline2(gMessageIntro);
-
+        lea CurrentLevelName,a0
+        cmp.b #'1',(a0)
+        bne .noLevel11
+        cmp.b #'1',1(a0)
+        bne .noLevel11        
+        move.b #9,gPaletteMode ; Special case, camera blinking
+.noLevel11
         ;move.b #0,gIconLastDisplayedId ; gIconLastDisplayedId=0; // No icons displayed at start.
         
         bsr EraseLastIcon ; Erase last icon (for picture 2 and 3, sucess icon)
@@ -4264,16 +4951,8 @@ InitRandom:				; call once at init
 LoopGame: ;		while(shouldloopingame) // This is false when we change level
 
             move.b #0,gSoundGoodHaveBeenPlayedThisFrame ; gSoundGoodHaveBeenPlayedThisFrame=0;
-            
-            ;move.w sound_stopCounter,d0
-            ;move.b d0,$104
 
-            ; No Joy on Amiga, only mouse and keyboard
-            ; // Get joy value. All to 1, and pressed buttons are 0
-            ; myjoy = PEEK(0xdc01) & PEEK(0xdc00); // GetJoy(0); // BUG: This always send back 255. (lda 0xdc01)
-
-            ; // Manage Time
-            bsr UpdateTime ; UpdateTime();
+            bsr UpdateTime ; UpdateTime(); ; // Manage Time
 		
             bsr UpdatePaletteMode ; UpdatePaletteMode(); // Update palette effects
 
@@ -4310,10 +4989,10 @@ LoopGame: ;		while(shouldloopingame) // This is false when we change level
             move.b #1,firepressed
 .nomouse:      
             ; Test keyboard
-            cmp.b #$40,keyboarddata
-            bne .nokeyspace
-            move.b #1,firepressed
-.nokeyspace:
+;            cmp.b #$40,keyboarddata ; Space not used on Amiga
+;            bne .nokeyspace
+;            move.b #1,firepressed
+;.nokeyspace:
             cmp.b #$4e,keyboarddata
             bne .nokeyright
             move.b #1,iskeyright
@@ -4337,11 +5016,15 @@ LoopGame: ;		while(shouldloopingame) // This is false when we change level
             ; // Skip level ?
             cmp.b #0,gCheatEnable; if (gCheatEnable) // Cheat. Skip level
             beq .nogCheatEnable
-            cmp.b #0,gamestate ; Avoid multiple detection of key 'n'
-            bne .nogCheatEnable
+            cmp.b #1,gSkippingLevel ; Avoid multiple detection of key 'n'
+            beq .nogCheatEnable
             cmp.b #$36,keyboarddata ; if (c64keypressed=='n') 
             bne .nogCheatEnable
+            cmp.b #0,gCheatEnableTimer
+            bne .nogCheatEnable
+                    ;add.b #1,$101
                     move.b #1,gSkippingLevel ; gSkippingLevel=1; // Do not play SFX while forcing all actions
+                    move.b #200,gCheatEnableTimer
                     move.l gCurrentScenarioLine,a0
                     cmp.b #255,(a0) ; while ( gCurrentScenarioLine[0] != 255 )
                     beq .endwhile  
@@ -4359,38 +5042,67 @@ LoopGame: ;		while(shouldloopingame) // This is false when we change level
                     move.b #4,gamestate ; gamestate=4; // End, go to next level
                     move.b #1,firepressed ; firepressed=1; // Simulate fire press
                     move.b #0,firepressedlast ; firepressedlast=0;
-                    move.b #0,gSkippingLevel ; gSkippingLevel=0;	
                     bsr DisableSpriteCursor
                     bsr DisableSpriteJauge
                     bsr EraseLastIcon
+                    bra .nogCheatEnable
 .nogCheatEnable:
-; TODO
-;			else if (c64keypressed!=0)
-;			{
-;				// is user activating the cheat code ?
-;				// Cheat code activation is "SOS"
-;				// gCheatSequenceCorrectLetters
-;				if ( gCheatSequenceCorrectLetters == 0 && (c64keypressed=='s' ) )
-;					gCheatSequenceCorrectLetters = 1;
-;				else if ( gCheatSequenceCorrectLetters == 1 && (c64keypressed=='s' ) )
-;				{
-;					// do nothing, wait that S stop beeing pressed
-;				}				
-;				else if ( gCheatSequenceCorrectLetters == 1 && (c64keypressed=='o' ) )
-;					gCheatSequenceCorrectLetters = 2;
-;				else if ( gCheatSequenceCorrectLetters == 2 && (c64keypressed=='o' ) )
-;				{
-;					// do nothing, wait that S stop beeing pressed
-;				}				
-;				else if ( gCheatSequenceCorrectLetters == 2 && (c64keypressed=='s' ) )
-;				{
-;					bordercolor(COLOR_WHITE);
-;					gCheatEnable = 1;
-;					bordercolor(COLOR_BLACK);
-;				}
-;				else
-;					gCheatSequenceCorrectLetters=0;
-;			}
+            cmp.b #0,gCheatEnableTimer
+            beq .noreducetimer
+            sub.b #1,gCheatEnableTimer ; to avoid multiple "n" press
+.noreducetimer:
+
+            ; -- TEST SOS Cheat code
+            cmp.b #1,gCheatEnable; if (gCheatEnable) // Cheat. Skip level
+            beq .noCheatSequence
+            cmp.b #0,keyboarddata; else if (c64keypressed!=0)
+            beq .noCheatSequence
+            ; // is user activating the cheat code ?
+            ; // Cheat code activation is "SOS"
+            ; // gCheatSequenceCorrectLetters (b)
+            ; // S=$21 O=$18
+            ; TEST "S"
+            cmp.b #0,gCheatSequenceCorrectLetters ; if ( gCheatSequenceCorrectLetters == 0 && (c64keypressed=='s' ) )
+            bne .no0
+            cmp.b #$21,keyboarddata
+            bne .no0
+                move.b #1,gCheatSequenceCorrectLetters ; gCheatSequenceCorrectLetters = 1;
+            bra .noCheatSequence
+.no0:
+            cmp.b #1,gCheatSequenceCorrectLetters ; else if ( gCheatSequenceCorrectLetters == 1 && (c64keypressed=='s' ) )
+            bne .no0b
+            cmp.b #$21,keyboarddata
+            bne .no0b
+            ; 	// do nothing, wait that S stop beeing pressed
+            bra .noCheatSequence
+.no0b:        
+            ; TEST O
+            cmp.b #1,gCheatSequenceCorrectLetters ; if ( gCheatSequenceCorrectLetters == 1 && (c64keypressed=='o' ) )
+            bne .no1
+            cmp.b #$18,keyboarddata
+            bne .no1
+                move.b #2,gCheatSequenceCorrectLetters ; gCheatSequenceCorrectLetters = 1;
+            bra .noCheatSequence
+.no1:
+            cmp.b #2,gCheatSequenceCorrectLetters ; else if ( gCheatSequenceCorrectLetters == 1 && (c64keypressed=='s' ) )
+            bne .no1b
+            cmp.b #$18,keyboarddata
+            bne .no1b
+            ; 	// do nothing, wait that O stop beeing pressed
+            bra .noCheatSequence
+.no1b: 
+            ; TEST "S"
+            cmp.b #2,gCheatSequenceCorrectLetters ; if ( gCheatSequenceCorrectLetters == 2 && (c64keypressed=='s' ) )
+            bne .no2
+            cmp.b #$21,keyboarddata
+            bne .no2
+                move.w #$fff,$dff180 ; 	bordercolor(COLOR_WHITE);
+                move.b #1,gCheatEnable; 	gCheatEnable = 1;
+                move.b #0,gCheatSequenceCorrectLetters; else gCheatSequenceCorrectLetters=0;
+            bra .noCheatSequence
+.no2:			
+            move.b #0,gCheatSequenceCorrectLetters; else gCheatSequenceCorrectLetters=0;
+.noCheatSequence:
 ;			// -- End cheat code skip level
 
             cmp.b #0,gamestate; if (gamestate!=0) // Disable Cursor if mode is not "playing" else keep it enabled
@@ -4585,11 +5297,11 @@ CursorMode5:        ; else if (gCursorMode==5) // 5=always falling
                     
                     
                     ;					if (y==(128 - SP_H) )
-                    ;						y=0;                    
+                    ;						y=0;   
                     ; if bottom reached, then go up
-                    cmp.w	#$2c+1+8+(15*8),Spr_y	; compare with bottom
+                    cmp.w	#MOUSE_CURSOR_TOP+(15*8),Spr_y	; compare with bottom
                     bne	.no_h2
-                    move.w	#$2c+1+8,Spr_y	; jump top line
+                    move.w	#MOUSE_CURSOR_TOP,Spr_y	; jump top line
                     move.w	#0,Posy
 .no_h2	  
                     
@@ -4620,10 +5332,10 @@ CursorMode6:        ; else if (gCursorMode==6) // 6=always going right
                     ;					else if ( iskeydown ) y+=4;
                     ;					x++;
                     
-                    ; if ( x >= (96-SP_W) ) x = 0;
-                    cmp.w	#$81+(11*8),Spr_x	; compare with right limit
+                    ; if ( x >= (96-SP_W) ) x = 0; 
+                    cmp.w	#MOUSE_CURSOR_LEFT+(11*8),Spr_x	; compare with right limit
                     bne	.no_h2
-                    move.w	#$81,Spr_x	; jump top ledt side
+                    move.w	#MOUSE_CURSOR_LEFT,Spr_x	; jump top ledt side
                     move.w	#0,Posx
 .no_h2	                     
                     
@@ -4653,10 +5365,10 @@ CursorMode7:        ; else if (gCursorMode==7) // 7=always going left
                     ;					else if ( iskeydown ) y+=4;
                     ;					x--;
                     
-                    ; if (x > 200 ) x=(96-SP_W); // Negative
-                    cmp.w	#$81,Spr_x	; compare with right limit
+                    ; if (x > 200 ) x=(96-SP_W); // 
+                    cmp.w	#MOUSE_CURSOR_LEFT,Spr_x	; compare with right limit
                     bne	.no_h2
-                    move.w	#$81+(11*8),Spr_x	; jump top ledt side
+                    move.w	#MOUSE_CURSOR_LEFT+(11*8),Spr_x	; jump top ledt side
                     move.w	#21,Posx ; 11 cells wide, but cursor move half cells
 .no_h2	                    
                     
@@ -4737,7 +5449,7 @@ EndCursorModeManagement:
                     bne .nodiablo
                      cmp.b #100,actiontodo ;  if (actiontodo<100 && gNextPalette == 0 )
                      bge .nodiablo
-                     cmp.b #0,gNextPalette
+                     cmp.b #1,gNextPalette ; 1 == alt with diablo
                      bne .nodiablo
                         move.b #101,actiontodo ; actiontodo = 101; // Force death if diablo is displayed
 .nodiablo:
@@ -4832,6 +5544,19 @@ SFXDEATHNUMBERBEFOREPLAYSOUND=3 ;//#define SFXDEATHNUMBERBEFOREPLAYSOUND 4 // Ea
 .noactionKeyPressed:
 
                 ; // Manage Gauge -----------------------------
+                ; Test is Gauge is ready to start
+                cmp.b #1,gGaugeReadyToStart
+                bne .notestreadytostart
+                move.b mouse_want_right,d0
+                or.b mouse_want_left,d0
+                or.b mouse_want_up,d0
+                or.b mouse_want_down,d0
+                cmp.b #1,d0
+                bne .notestreadytostart 
+                ; Mouse have moved, we are ready to start Gauge !!
+                move.b #0,gGaugeReadyToStart
+                move.b #1,gGaugeInUse
+.notestreadytostart        
                 cmp.b #1,gGaugeInUse; if ( gGaugeInUse == 1 )
                 bne .nogGaugeInUse3
                     bsr UpdateAndDisplayGauge ; DisplayGauge(); 
@@ -4915,10 +5640,27 @@ StateDead:
                     ; // -- Intro text
                     move.l gMessageIntro,a0
                     bsr displayline2 ; displayline2(gMessageIntro);
+                    ; Camera blinking ?
+                    lea CurrentLevelName,a0
+                    cmp.b #'1',(a0)
+                    bne .noLevel11
+                    cmp.b #'1',1(a0)
+                    bne .noLevel11 
+                    move.b #9,gPaletteMode ; Special case, camera blinking
+.noLevel11                    
 					move.b #0,gamestate ; gamestate=0;	
                     move.l gScenario,a0
                     move.l a0,gCurrentScenarioLine ; gCurrentScenarioLine=gScenario;
                     bsr resetzones ; resetzones();
+                    ; Level 51 display pic (reset picture)
+                    lea CurrentLevelName,a0
+                    cmp.b #'5',(a0)
+                    bne .noLevel51
+                    cmp.b #'1',1(a0)
+                    bne .noLevel51 
+                    bsr DisplayPic ; Reinit screen
+.noLevel51      
+                    
                     bsr InitNextAction ; InitNextAction();	
 .nopressed:                    
             bra LoopGameWhileTest
@@ -4942,6 +5684,7 @@ StateText:
                     add.l d0,a0 
                     move.l (a0),a0 ; gMessageSucces[texid-1]
                     bsr displayline2 ; displayline2(gMessageSucces[texid-1]);
+                    bsr PlaySoundClick
                     add.l #10,gCurrentScenarioLine ; gCurrentScenarioLine+=10
                     bsr InitNextAction ; InitNextAction();
 .nopressed:
@@ -4957,6 +5700,23 @@ StateBeforeQTE:
             beq .nopressed
                 move.b #3,gamestate ; gamestate=3; // Start QTE
 .nopressed
+            ; If any keyboard key pressed ?
+            clr.b d0
+            move.b iskeyup,d0
+            or.b iskeydown,d0
+            or.b iskeyleft,d0
+            or.b iskeyright,d0
+            cmp.b #0,d0
+            bne .nopressedkeys
+            clr.b d0
+            move.b iskeyuplast,d0
+            or.b iskeydownlast,d0
+            or.b iskeyleftlast,d0
+            or.b iskeyrightlast,d0
+            cmp.b #1,d0
+            bne .nopressedkeys
+                move.b #3,gamestate ; gamestate=3; // Start QTE
+.nopressedkeys
             bra LoopGameWhileTest
             
 MainNogamestateBeforeQTE:
@@ -5182,6 +5942,7 @@ QTEStateEnd:
             bra LoopGameWhileTest
             
 MainNogamestateQTE:
+
 StateEnd:
             cmp.b #4,gamestate ; else if (gamestate==4) // -- END, load next level
             bne MainNogamestateEnd
@@ -5202,14 +5963,13 @@ StateEnd:
                     bne .noD1
                     move.b #'6',(a1)
                     move.b #'1',1(a1)
-.noD1                  
-
+.noD1:                  
                     cmp.b #'3',d1 ; For music changes, check if we are looping back to same level (credits)
                     bne .nocreditlooping
                     cmp.b (a1),d0
                     bne .nocreditlooping
                     move.b #1,gCreditLooping
-.nocreditlooping                    
+.nocreditlooping:                    
 					move.b #8,gamestate ; Do real loading. gamestate=8;
 .nopressed:
             bra LoopGameWhileTest
@@ -5231,47 +5991,27 @@ StateDisplayStats:
 
 MainNogamestateDisplayStats:
 
-;StateDeathWithSound:
-;            cmp.b #6,gamestate ; else if (gamestate==6) // -- Death with sound (play sound)
-;            bne MainNogamestateDeathWithSound
-;                bsr EraseBanner ; EraseBanner(); // Erase bottom of screen (we are going to stay in mode 0)	
-;                bsr PlayRandomSound ; PlayRandomSound();
-;				move.b #1,gamestate ; gamestate=1; // Go death wait spacebar.
-;                bsr DisplayBanner ; DisplayBanner();
-;                move.w #TEXTCOLORBAD,textboldcolor ; textboldcolor (w)  = TEXTCOLORBAD; // 0x27 (red) 0x47 (purple)
-;                move.l gSfxTextDeathSave,a0
-;                bsr displayline2 ; displayline2(gSfxTextDeathSave); 
-;                move.w #TEXTCOLORGOOD,textboldcolor ; textboldcolor = TEXTCOLORGOOD; // 0x27 (red) 0x47 (purple)				
-;            bra LoopGameWhileTest
-
-MainNogamestateDeathWithSound:
 StateLevelChange:	
             cmp.b #8,gamestate ; else if (gamestate==8) // -- DO THE LEVEL CHANGE (so always start at beginning of a frame)
             bne MainNogamestateLevelChange
+                move.b #0,gSkippingLevel ; gSkippingLevel=0;
                 ; // Go to next level
                 move.b #0,shouldloopingame ; shouldloopingame=0; // Exit main loop and do level load.
                 bsr EraseBanner ; EraseBanner(); // Erase bottom of screen 
-                ; gInterruptInactive=1; // Will not change resolution anymore
-                ; gInterruptReached=1; // to pass the end of this while loop
                 bsr InitLevel ; Will use "CurrentLevelId" // Display floppy
+                                    
             bra LoopGameWhileTest
 MainNogamestateLevelChange:	
 
 LoopGameWhileTest: 
 
             bsr wait1Frame
-	
-            ; } // While loop in game
 
-        ; while(shouldloopingame) // This is false when we change level
         cmp.b #1,shouldloopingame
-        beq LoopGame
+        beq LoopGame ; while(shouldloopingame) // This is false when we change level
 
     rts
 ;---------------------------------------------------------------
-
-
-
 
 	data_c
 
@@ -5369,81 +6109,18 @@ IntroPlansPtr6:
         ;dc.l 	$30dffffe,$018000F0,$01000200
 		Dc.l	$fffffffe
     
-;---------------------------------------------------------------
-; Intro copper list
-
 	cnop 0,4
-
-COPPIntro2:	
+   
+;---------------------------------------------------------------
+; Empty copper list for transition
+COPPEmpty:	
 		dc.w	$0180,$000
         DC.L	$01000200,$01020000
         dc.l    $010a0000,$01080000 ; Modulo 0
-        dc.l    $01040064 ; BPLCON2. All sprite in front.     
-        dc.l	$01fc0000,$010c0011 ; Aga fix
-IntroSpr2:		
-        dc.l	$01200000,$01220000 ; spr 0. Cursor. 4 colors
-		dc.l	$01240000,$01260000 ; spr 1  Unused
-        dc.l    $01280000,$012a0000 ; spr 2  Unused
-		dc.l	$012c0000,$012e0000 ; spr 3  Unused
-        dc.l    $01300000,$01320000 ; spr 4  Unused
-		dc.l	$01340000,$01360000 ; spr 5  Unused
-        dc.l    $01380000,$013a0000 ; spr 6  Unused
-		dc.l	$013c0000,$013e0000 ; spr 7  Unused
-        ; Sprite colors
-        dc.l    $01a00000 ; color 16 ; Transparent
-        dc.l    $01a20888 ; color 17 ; Cursor Color 1
-        dc.l    $01a40000 ; color 18 ; Cursor Color 2
-        dc.l    $01a60fff ; color 19 ; Cursor Color 3
-        ; Color remaining (12)
-        dc.l    $01a80000,$01aa0000,$01ac0000,$01ae0000
-        dc.l    $01b00000,$01b20000,$01b40000,$01b60000
-        dc.l    $01b80000,$01ba0000,$01bc0000,$01be0000
-        
-IntroPalettePtr2:
- 		dc.w    $0180,$0F00,$0182,$0FFF ; 16 colors
-		dc.w    $0184,$0888,$0186,$0F00
-		dc.w    $0188,$00F0,$018A,$000F
-		dc.w    $018C,$0F0F,$018E,$0FF0
-		dc.w    $0190,$00FF,$0192,$0808
-		dc.w    $0194,$0008,$0196,$0FF8
-		dc.w    $0198,$088F,$019A,$0F88
-		dc.w    $019C,$08F8,$019E,$0F84
-        
-		dc.b    $2b,$07,$ff,$fe ; First line 
-        
-IntroPlansPtrIntro2:
-		Dc.l	$00e00000,$00e20000 ; 16 colors
-		Dc.l	$00e40000,$00e60000        
-        Dc.l	$00e80000,$00ea0000
-		Dc.l	$00ec0000,$00ee0000        
-
-		dc.b    $2c,$df,$ff,$fe ; First line 
-		Dc.l    $01004200 ; Planes
-
-        dc.b    $2c+200,$df,$ff,$fe ; 200 lines = end  
-        
-        DC.L	$01000200
-IntroTitleScrollTextPal:
- 		dc.w    $0180,$0F00,$0182,$0FFF ; 8 colors
-		dc.w    $0184,$0888,$0186,$0F00
-		dc.w    $0188,$00F0,$018A,$000F
-		dc.w    $018C,$0F0F,$018E,$0FF0
-IntroTitleScrollTextPtr:
-		Dc.l	$00e00000,$00e20000 ; 8 colors
-		Dc.l	$00e40000,$00e60000        
-        Dc.l	$00e80000,$00ea0000
-        
-        ; Scroll text here. 8 lignes
-        dc.b    $2c+201,$df,$ff,$fe ; 200 lines = end  
-        DC.L	$01003200
-        
-        dc.b    $2c+201+8,$df,$ff,$fe ; 200 lines = end  
-        dc.l    $01000200
-
 		Dc.l	$fffffffe
     
 	cnop 0,4
-    
+   
 ;---------------------------------------------------------------
 ; Main copper list
 COPP1:	
@@ -5974,22 +6651,6 @@ SpriteCursor:
   dc.w $0000,$03c0
   dc.w 0,0 ; stop     
 
-;--------------------------------------------------------------
-; All background data. This is 308 bytes x 4 files = 1232 bytes
-; Each level have its own set. Data are copied here automatically
-Back1:
-    incbin  "data/Level0_Back1_HAM6.iff" ; $74 header , then 2x16x6=192
-;--------------------------------------------------------------
-Back1_half:
-    incbin  "data/Level0_Back1_half_HAM6.iff" ; $74 header , then 1x16x6=96
-;--------------------------------------------------------------    
-Back2:
-    incbin  "data/Level0_Back2_HAM6.iff" ; $74 header , then 2(bytes)x16x6=192  
-;--------------------------------------------------------------    
-Back2_half:
-    incbin  "data/Level0_Back2_half_HAM6.iff" ; $74 header , then 1(bytes)x16x6=96     
-;--------------------------------------------------------------
-
 	cnop 0,4
     
 ;--------------------------------------------------------------
@@ -6006,51 +6667,56 @@ BannerBack: ; 320x61x3 = 2440 for a plane.
 ;--------------------------------------------------------------
 
 ; Audio
-; Audacity, set frequency at bottom and export was "other uncompressed format" Signed 8bits PCM
+; Audacity, set frequency at bottom (11 Khz) and export was "other uncompressed format" Signed 8bits PCM
 
  cnop 0,4
     
 sound_good_raw:
     Incbin	"data/sounds/good.raw"	; 4175
-    
- cnop 0,4
+    cnop 0,4
+    sound_good_raw_end:
         
 sound_bad_raw:
     Incbin	"data/sounds/bad.raw"	; 6797
+    cnop 0,4
+sound_bad_raw_end:
     
- cnop 0,4
+sound_click_raw:
+    Incbin	"data/sounds/click.raw"	; 890   
+    cnop 0,4
+sound_click_raw_end:
         
 sound_warning_raw:
-    ;Incbin	"data/sounds/warning.raw" ; 3036	
-    Incbin	"data/sounds/warning2.raw" ; 8286
-    
- cnop 0,4
+    Incbin	"data/sounds/warning2.raw" ; 3524
+    cnop 0,4
+sound_warning_raw_end:
  
 sound_shout1_raw:
-    Incbin	"data/sounds/Shout_Kristof_3.raw"  ; sort aie
+    Incbin	"data/sounds/Shout_Kristof_3.raw"  ; short aie
+    cnop 0,4 
 sound_shout1_raw_end:    
-    
- cnop 0,4 
- 
+
 sound_shout2_raw:
-    Incbin	"data/sounds/Shout_Kristof_2.raw"  ; long dead
+    ;Incbin	"data/sounds/Shout_Kristof_2.raw"  ; long dead
+    Incbin	"data/sounds/Shout_Kristof_2_processed_shorten8.raw"  ; long dead
+    cnop 0,4
 sound_shout2_raw_end:       
- cnop 0,4 
- 
+
 sound_shout3_raw:
     Incbin	"data/sounds/Shout_Kristof_1.raw"  ; lond dead
+    cnop 0,4
 sound_shout3_raw_end:       
- cnop 0,4 
 
 sound_shout4_raw:
     Incbin	"data/sounds/Shout_Kristof_4.raw"  ; short aieee
+    cnop 0,4 
 sound_shout4_raw_end:       
- cnop 0,4 
 
 sound_shout5_raw:
     Incbin	"data/sounds/Shout_Kristof_5.raw"  ; uahhhhh
+    cnop 0,4 
 sound_shout5_raw_end:       
- cnop 0,4  
+
  
     ; ---------------
     ; -- DATA FAST --
@@ -6223,6 +6889,55 @@ IconFloppy: ; 8 colors 48*35. Same palette as text
 ;--------------------------------------------------------------
 
 	bss_c
+
+;--------------------------------------------------------------
+; All background data. This is 308 bytes x 4 files = 1232 bytes
+; Each level have its own set. Data are copied here automatically
+; Everything is divided into 8 pixels width slices, so first pixel is always fixed.
+; There can be a frame around picture.
+; Back1_Half1 8x16 pixels (16*6 bytes=96)
+; Back1_Half2 8x16 pixels (16*6 bytes=96)
+; Back2_Half1 8x16 pixels (16*6 bytes=96)
+; Back2_Half2 8x16 pixels (16*6 bytes=96)
+; -- Frame top line (left to right)
+; Back1_Half1_TopLeft 8x16 (16*6 bytes=96)
+; Top 8x4 pixels (4*6 bytes=32)
+; Back1_Half1_TopRight 8x16 (16*6 bytes=96)
+; -- Frame Side (top to bottom)
+; Back1_Half1_SideLeft 8x16 (16*6 bytes=96)
+; Back1_Half1_SideRight 8x16 (16*6 bytes=96)
+; Back2_Half1_SideLeft 8x16 (16*6 bytes=96)
+; Back2_Half1_SideRight 8x16 (16*6 bytes=96)
+; -- Frame middle 
+; TopMiddle 8x4 (4*6 bytes=24)
+; SideMiddle 8x8 (8*6 bytes=48)
+; -- Bottom left
+; Back1_BottomLeft 16x8 (16*6 bytes=96) 
+; Back1_BottomMiddle 16x8 (16*6 bytes=96)
+; Back2_BottomMiddle 16x8 (16*6 bytes=96)
+; Back1_BottomRight 16x8 (16*6 bytes=96)
+; BottomMiddle 8x8 (8*6 bytes=48)
+;
+; Total : 1496 bytes
+; 11 differents levels
+; 16456 bytes.
+
+Back1:
+    ;incbin  "data/Level0_Back1_HAM6.iff" ; $74 header , then 2x16x6=192
+    ds.b 308
+;--------------------------------------------------------------
+Back1_half:
+    ;incbin  "data/Level0_Back1_half_HAM6.iff" ; $74 header , then 1x16x6=96
+    ds.b 308
+;--------------------------------------------------------------    
+Back2:
+    ;incbin  "data/Level0_Back2_HAM6.iff" ; $74 header , then 2(bytes)x16x6=192 
+    ds.b 308    
+;--------------------------------------------------------------    
+Back2_half:
+    ;incbin  "data/Level0_Back2_half_HAM6.iff" ; $74 header , then 1(bytes)x16x6=96 
+    ds.b 308    
+;--------------------------------------------------------------
 
 start_planes:	
 
